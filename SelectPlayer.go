@@ -5,7 +5,6 @@ import (
     "fmt"
     "io/ioutil"
     "net/http"
-    "time"
 )
 
 
@@ -28,7 +27,8 @@ func getAllPlayerData() {
         panic(err)
     }
 
-	playerData := make(map[string]map[string]interface{})
+	playerData := make(map[string][]map[string]interface{})
+	playerData["player"] = []map[string]interface{}{}
 
 	for _, player := range result2.Elements {
 		baseURL := "https://fantasy.premierleague.com/api/"
@@ -46,9 +46,12 @@ func getAllPlayerData() {
 
 		var result map[string]interface{}
 		json.Unmarshal(body, &result)
-
-		playerData[player.SecondName] = result
-		time.Sleep(time.Second/5)
+		result["name"] = player.FirstName + " " + player.SecondName
+		result["id"] = player.ID
+		result["team"] = player.Team
+		result["position"] = player.ElementType
+		result["cost"] = player.NowCost
+		playerData["player"] = append(playerData["player"], result) 
 	}
 
 	b, err := json.MarshalIndent(playerData, "", "  ")
