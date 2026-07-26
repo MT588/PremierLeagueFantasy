@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Query
 from sqlalchemy import text
 
+from app.constants import MODEL_VERSION
 from app.db import engine
 from app.deps import current_season, next_gameweek
-from ml.train_v2 import MODEL_VERSION
 
 router = APIRouter(tags=["predictions"])
 

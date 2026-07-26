@@ -106,22 +106,120 @@ export interface TeamOut {
   code: number;
   name: string;
   short_name: string;
+  strength_overall_home: number | null;
+  strength_overall_away: number | null;
+  strength_attack_home: number | null;
+  strength_attack_away: number | null;
+  strength_defence_home: number | null;
+  strength_defence_away: number | null;
+  next_opponent: string | null;
+  next_fdr: number | null;
 }
 
-async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${API}${path}`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`${path} -> ${res.status}`);
-  return res.json();
+/** Wide per-player row backing the captaincy, attack, defence, price and full
+ *  player tables. Fetched once, filtered client-side per view. */
+export interface PlayerStats {
+  code: number;
+  web_name: string;
+  full_name: string;
+  position: number;
+  team_code: number | null;
+  team_short: string | null;
+  price: number;
+  status: string | null;
+  chance_of_playing: number | null;
+  news: string | null;
+
+  predicted_points: number | null;
+  rating: string | null;
+  p_start: number | null;
+
+  /** Which season the season-scoped columns below come from. Before a season
+   *  kicks off this is last season. */
+  stat_season: string | null;
+  total_points: number;
+  minutes: number;
+  starts: number | null;
+  appearances: number;
+  ppg: number | null;
+  points_per_million: number | null;
+  starts_share: number | null;
+
+  form_points: number | null;
+  form_minutes: number | null;
+  xg90_form: number | null;
+  xa90_form: number | null;
+  xgi90_form: number | null;
+  dc90_form: number | null;
+
+  xg90_season: number | null;
+  xa90_season: number | null;
+  xgi90_season: number | null;
+  dc90_season: number | null;
+
+  team_xgc90_form: number | null;
+  team_xgc90_season: number | null;
+
+  selected_by_percent: number | null;
+  transfers_in_event: number | null;
+  transfers_out_event: number | null;
+  net_transfers: number;
+
+  next_opponent: string | null;
+  next_fdr: number | null;
+
+  recent_points: number[];
 }
 
-export const api = {
-  meta: () => get<Meta>("/api/meta"),
-  teams: () => get<TeamOut[]>("/api/teams"),
-  players: (params: Record<string, string> = {}) =>
-    get<PlayerRow[]>(`/api/players?${new URLSearchParams(params)}`),
-  player: (code: number) => get<PlayerDetail>(`/api/players/${code}`),
-  predictions: (params: Record<string, string> = {}) =>
-    get<Record<string, unknown>[]>(`/api/predictions?${new URLSearchParams(params)}`),
-  optimalTeam: (budget: number, horizon: number) =>
-    get<OptimalTeam>(`/api/optimal-team?budget=${budget}&horizon=${horizon}`),
-};
+export class ApiError extends Error {
+  constructor(
+    readonly status: number,
+    readonly path: string,
+  ) {
+    super(`${path} -> ${status}`);
+    this.name = "ApiError";
+  }
+}
+
+/** Resolves the caller's Supabase access token. `forceRefresh` is set on the
+ *  retry after a 401, to distinguish an expired token from a real rejection. */
+type GetToken = (opts: { forceRefresh: boolean }) => Promise<string | null>;
+
+/** The API requires a Supabase JWT on every route, and the token is reachable
+ *  in different ways on the server (cookies) than in the browser (session
+ *  storage). Both entry points build a client from this factory: see
+ *  api.server.ts and api.client.ts. */
+export function createApi(getToken: GetToken, onUnauthorized: () => void) {
+  async function get<T>(path: string, retried = false): Promise<T> {
+    const token = await getToken({ forceRefresh: retried });
+    const res = await fetch(`${API}${path}`, {
+      cache: "no-store",
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+
+    if (res.status === 401) {
+      // A token that expired mid-session refreshes and succeeds on retry;
+      // anything else means the session is genuinely gone.
+      if (!retried) return get<T>(path, true);
+      onUnauthorized();
+      throw new ApiError(401, path);
+    }
+    if (!res.ok) throw new ApiError(res.status, path);
+    return res.json();
+  }
+
+  return {
+    meta: () => get<Meta>("/api/meta"),
+    teams: () => get<TeamOut[]>("/api/teams"),
+    players: (params: Record<string, string> = {}) =>
+      get<PlayerRow[]>(`/api/players?${new URLSearchParams(params)}`),
+    player: (code: number) => get<PlayerDetail>(`/api/players/${code}`),
+    playerStats: () => get<PlayerStats[]>("/api/player-stats"),
+    predictions: (params: Record<string, string> = {}) =>
+      get<Record<string, unknown>[]>(`/api/predictions?${new URLSearchParams(params)}`),
+    optimalTeam: (budget: number, horizon: number) =>
+      get<OptimalTeam>(`/api/optimal-team?budget=${budget}&horizon=${horizon}`),
+  };
+}
+
+export type Api = ReturnType<typeof createApi>;

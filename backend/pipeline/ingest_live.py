@@ -41,6 +41,8 @@ HISTORY_COLUMNS = {
     "selected_by": "selected",
     "transfers_in": "transfers_in",
     "transfers_out": "transfers_out",
+    "defensive_contribution": "defensive_contribution",
+    "starts": "starts",
 }
 
 
@@ -134,6 +136,10 @@ def sync_live(engine: Engine) -> None:
             "now_cost",
             "status",
             "chance_of_playing_next_round",
+            "selected_by_percent",
+            "transfers_in_event",
+            "transfers_out_event",
+            "news",
         ]
     ].rename(
         columns={
@@ -142,6 +148,10 @@ def sync_live(engine: Engine) -> None:
             "element_type": "position",
             "chance_of_playing_next_round": "chance_of_playing",
         }
+    )
+    # FPL serves ownership as a string ("62.5"); the rest are already numeric.
+    ps["selected_by_percent"] = pd.to_numeric(
+        ps["selected_by_percent"], errors="coerce"
     )
     ps["season_id"] = season_id
     n_players = upsert(

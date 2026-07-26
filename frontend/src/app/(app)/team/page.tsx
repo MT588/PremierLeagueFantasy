@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { api, OptimalTeam, SquadPlayer } from "@/lib/api";
+import { OptimalTeam, SquadPlayer } from "@/lib/api";
+import { api } from "@/lib/api.client";
 import { fmtPrice } from "@/lib/ui";
-import { Card } from "@/components/ui";
+import { Card, SectionTitle } from "@/components/ui";
 
 function PlayerCard({ p }: { p: SquadPlayer }) {
   return (
@@ -58,7 +59,7 @@ export default function TeamPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-xl font-semibold">Optimal team</h1>
+        <SectionTitle n={2}>Optimal team</SectionTitle>
         <div className="flex flex-wrap items-center gap-4 text-sm">
           <label className="flex items-center gap-2 text-ink-2">
             Budget
@@ -69,7 +70,7 @@ export default function TeamPage() {
               step={0.5}
               value={budget}
               onChange={(e) => setBudget(Number(e.target.value))}
-              className="accent-[#3987e5]"
+              className="accent-pitch"
             />
             <span className="w-16 tabular-nums">{fmtPrice(budget)}</span>
           </label>
@@ -121,7 +122,7 @@ export default function TeamPage() {
           </div>
 
           <div
-            className={`relative rounded-xl border border-hairline bg-gradient-to-b from-[#0f2c1a] to-[#123a22] px-2 py-6 transition-opacity ${loading ? "opacity-50" : ""}`}
+            className={`relative rounded-xl border border-hairline bg-gradient-to-b from-[#0B3D2E] to-[#14543F] px-2 py-6 transition-opacity ${loading ? "opacity-50" : ""}`}
           >
             <div className="pointer-events-none absolute inset-x-8 top-1/2 h-px bg-white/10" />
             <div className="pointer-events-none absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />

@@ -1,16 +1,25 @@
 @import "tailwindcss";
 
-/* Dark-first neutral theme; series + chrome tokens from the validated palette */
+/* Light "pitch" theme: cream paper, pitch green, gold accent. */
 :root {
-  color-scheme: dark;
-  --page: #0d0d0d;
-  --surface: #1a1a19;
-  --ink: #ffffff;
-  --ink-2: #c3c2b7;
-  --ink-3: #898781;
-  --grid: #2c2c2a;
-  --hairline: rgba(255, 255, 255, 0.1);
-  --series-1: #3987e5;
+  color-scheme: light;
+  --page: #f5f3ec; /* paper  */
+  --surface: #ffffff; /* panel  */
+  --ink: #1c1c1c;
+  --ink-2: #6b6b63; /* muted  */
+  --ink-3: #8e8e85;
+  --grid: #e4e0d4; /* line   */
+  --hairline: #e4e0d4;
+  --series-1: #0b3d2e; /* pitch  */
+  --pitch-light: #14543f;
+  --gold: #c9a227;
+
+  /* FDR 1 (easy) -> 5 (hard) */
+  --fdr-1: #3e8e5a;
+  --fdr-2: #8fbf6b;
+  --fdr-3: #e8c547;
+  --fdr-4: #e08b3d;
+  --fdr-5: #c0392b;
 }
 
 @theme inline {
@@ -22,11 +31,44 @@
   --color-grid: var(--grid);
   --color-hairline: var(--hairline);
   --color-accent: var(--series-1);
-  --font-sans: var(--font-geist-sans);
+  --color-pitch: var(--series-1);
+  --color-pitch-light: var(--pitch-light);
+  --color-gold: var(--gold);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-archivo);
 }
 
 body {
   background: var(--page);
   color: var(--ink);
-  font-family: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+}
+
+/* Sticky first column keeps the player name in view on wide tables. */
+.sticky-name tbody td:first-child,
+.sticky-name thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--surface);
+}
+.sticky-name thead th:first-child {
+  background: var(--series-1);
+}
+.sticky-name tbody tr:hover td:first-child {
+  background: #faf8f1;
+}
+
+/* Secondary columns drop away on a phone; still reachable by scrolling. */
+@media (max-width: 760px) {
+  .col-opt {
+    display: none;
+  }
 }

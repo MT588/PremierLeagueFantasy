@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import text
 
 from app import queries
+from app.constants import MODEL_VERSION
 from app.db import engine
 from app.deps import current_season, next_gameweek
 from app.schemas import (
@@ -11,7 +12,6 @@ from app.schemas import (
     PlayerRow,
     PredictionOut,
 )
-from ml.train_v2 import MODEL_VERSION
 
 router = APIRouter(tags=["players"])
 

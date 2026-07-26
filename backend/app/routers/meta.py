@@ -1,19 +1,13 @@
 from fastapi import APIRouter
 from sqlalchemy import text
 
+from app import queries
+from app.constants import MODEL_VERSION
 from app.db import engine
 from app.deps import current_season, next_gameweek
 from app.schemas import Meta, TeamOut
-from ml.train_v2 import MODEL_VERSION
 
 router = APIRouter(tags=["meta"])
-
-
-@router.get("/health")
-def health() -> dict:
-    with engine.connect() as conn:
-        conn.execute(text("select 1"))
-    return {"status": "ok"}
 
 
 @router.get("/meta", response_model=Meta)
@@ -43,12 +37,12 @@ def meta() -> Meta:
 def teams() -> list[TeamOut]:
     season_id, _ = current_season()
     with engine.connect() as conn:
-        rows = conn.execute(
-            text(
-                "select t.code, t.name, t.short_name from team_seasons ts "
-                "join teams t on t.code = ts.team_code "
-                "where ts.season_id = :s order by t.name"
-            ),
-            {"s": season_id},
-        ).all()
-    return [TeamOut(code=r.code, name=r.name, short_name=r.short_name) for r in rows]
+        rows = (
+            conn.execute(
+                text(queries.TEAMS_LIST),
+                {"season_id": season_id, "gameweek": next_gameweek(season_id)},
+            )
+            .mappings()
+            .all()
+        )
+    return [TeamOut(**r) for r in rows]

@@ -16,6 +16,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from app.constants import MODEL_VERSION
 from app.db import engine
 from ml import minutes_model, points_model
 from ml.features import FEATURES, build_training_frame
@@ -25,7 +26,6 @@ from ml.metrics import multiclass_log_loss, points_metrics
 log = logging.getLogger(__name__)
 
 ARTIFACTS = Path(__file__).resolve().parent / "artifacts"
-MODEL_VERSION = "lgbm-v2"
 
 FOLDS = [
     (2022, "2023-24"),

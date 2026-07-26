@@ -57,7 +57,7 @@ export default function PointsChart({ history }: { history: GameweekPoint[] }) {
               allowDecimals={false}
             />
             <Tooltip
-              cursor={{ fill: "rgba(255,255,255,0.05)" }}
+              cursor={{ fill: "rgba(11,61,46,0.07)" }}
               contentStyle={{
                 background: "var(--surface)",
                 border: "1px solid var(--hairline)",

@@ -1,0 +1,10 @@
+# API-only dependency set for the Vercel deployment. The ML/pipeline packages
+# (lightgbm, pandas, scikit-learn, ...) are deliberately absent: nothing under
+# app/ or optimizer/ imports them, and including them blows the 250 MB bundle
+# limit. Local development still installs everything via pyproject.toml/uv.
+fastapi>=0.140.0
+sqlalchemy>=2.0.51
+psycopg[binary]>=3.3.4
+pydantic-settings>=2.14.2
+pulp>=3.3.2
+pyjwt[crypto]>=2.10.1

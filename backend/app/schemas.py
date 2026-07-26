@@ -13,6 +13,70 @@ class TeamOut(BaseModel):
     code: int
     name: str
     short_name: str
+    strength_overall_home: int | None = None
+    strength_overall_away: int | None = None
+    strength_attack_home: int | None = None
+    strength_attack_away: int | None = None
+    strength_defence_home: int | None = None
+    strength_defence_away: int | None = None
+    next_opponent: str | None = None
+    next_fdr: int | None = None
+
+
+class PlayerStats(BaseModel):
+    """Wide per-player row backing the captaincy, attack, defence, price and
+    full player tables. One fetch feeds all five."""
+
+    code: int
+    web_name: str
+    full_name: str
+    position: int
+    team_code: int | None
+    team_short: str | None
+    price: float
+    status: str | None
+    chance_of_playing: int | None
+    news: str | None
+
+    predicted_points: float | None
+    rating: str | None
+    p_start: float | None
+
+    # Season columns come from `stat_season` — the latest season with real rows,
+    # which pre-season is last season.
+    stat_season: str | None
+    total_points: int
+    minutes: int
+    starts: int | None
+    appearances: int
+    ppg: float | None
+    points_per_million: float | None
+    starts_share: float | None
+
+    form_points: int | None
+    form_minutes: int | None
+    xg90_form: float | None
+    xa90_form: float | None
+    xgi90_form: float | None
+    dc90_form: float | None
+
+    xg90_season: float | None
+    xa90_season: float | None
+    xgi90_season: float | None
+    dc90_season: float | None
+
+    team_xgc90_form: float | None
+    team_xgc90_season: float | None
+
+    selected_by_percent: float | None
+    transfers_in_event: int | None
+    transfers_out_event: int | None
+    net_transfers: int
+
+    next_opponent: str | None
+    next_fdr: int | None
+
+    recent_points: list[int]
 
 
 class PlayerRow(BaseModel):

@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-import Link from "next/link";
+import { Archivo, Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const archivo = Archivo({
+  variable: "--font-archivo",
+  weight: ["500", "700", "900"],
+  subsets: ["latin"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -13,45 +18,19 @@ export const metadata: Metadata = {
   description: "FPL predictions, player ratings and optimal team picks",
 };
 
-const nav = [
-  { href: "/", label: "Dashboard" },
-  { href: "/players", label: "Players" },
-  { href: "/team", label: "Optimal Team" },
-];
-
+/** Document shell only. The dashboard chrome (header, sidebar, footer) lives in
+ *  the (app) group so /login can render without it. */
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">
-        <header className="sticky top-0 z-20 border-b border-hairline bg-page/90 backdrop-blur">
-          <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-8 px-4">
-            <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-accent" />
-              PL Fantasy
-            </Link>
-            <nav className="flex gap-1 text-sm">
-              {nav.map((n) => (
-                <Link
-                  key={n.href}
-                  href={n.href}
-                  className="rounded-md px-3 py-1.5 text-ink-2 transition-colors hover:bg-surface hover:text-ink"
-                >
-                  {n.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </header>
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
-        <footer className="mx-auto w-full max-w-6xl px-4 pb-8 text-xs text-ink-3">
-          Data: official FPL API + vaastav/Fantasy-Premier-League · predictions are model
-          estimates, not guarantees.
-        </footer>
-      </body>
+    <html
+      lang="en"
+      className={`${archivo.variable} ${inter.variable} h-full antialiased`}
+    >
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
 }

@@ -53,6 +53,8 @@ PGW_COLUMNS = {
     "selected_by": "selected",
     "transfers_in": "transfers_in",
     "transfers_out": "transfers_out",
+    "defensive_contribution": "defensive_contribution",
+    "starts": "starts",
 }
 
 

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { api, PredictionDrivers } from "@/lib/api";
+import { PredictionDrivers } from "@/lib/api";
+import { api } from "@/lib/api.server";
 import { fmtPrice, POSITIONS } from "@/lib/ui";
 import { Card, FdrChip, RatingBadge, StatusBadge } from "@/components/ui";
 import PointsChart from "@/components/PointsChart";
@@ -9,7 +10,7 @@ function DriversPanel({ drivers }: { drivers: PredictionDrivers }) {
   return (
     <Card title="What drives this prediction">
       {drivers.gated && (
-        <p className="mb-3 rounded-md bg-[#d03b3b]/15 px-3 py-2 text-xs text-[#ef8f8f]">
+        <p className="mb-3 rounded-md bg-[#F2E4E1] px-3 py-2 text-xs text-[#8A2E20]">
           Currently unavailable — prediction set to zero regardless of the inputs below.
         </p>
       )}
@@ -36,7 +37,7 @@ function DriversPanel({ drivers }: { drivers: PredictionDrivers }) {
               <div className="flex items-baseline justify-between gap-2">
                 <span className="truncate text-ink-2">{d.label}</span>
                 <span
-                  className={`shrink-0 tabular-nums ${up ? "text-[#7ee27e]" : "text-[#ef8f8f]"}`}
+                  className={`shrink-0 tabular-nums ${up ? "text-[#1E5C36]" : "text-[#8A2E20]"}`}
                 >
                   {up ? "+" : ""}
                   {d.contribution.toFixed(2)}
@@ -44,7 +45,7 @@ function DriversPanel({ drivers }: { drivers: PredictionDrivers }) {
               </div>
               <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-page">
                 <div
-                  className={`h-full rounded-full ${up ? "bg-[#0ca30c]" : "bg-[#d03b3b]"}`}
+                  className={`h-full rounded-full ${up ? "bg-[#3E8E5A]" : "bg-[#C0392B]"}`}
                   style={{ width: `${width}%` }}
                 />
               </div>

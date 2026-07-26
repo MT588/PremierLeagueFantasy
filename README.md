@@ -40,17 +40,14 @@ Requirements: [uv](https://docs.astral.sh/uv/), Node 20+, Postgres
 ```bash
 # 1. database
 createdb plfantasy
-psql -d plfantasy -f supabase/migrations/0001_core_schema.sql
-#    (on Supabase: apply the same file via the SQL editor or MCP apply_migration)
 
 # 2. backend config — set DATABASE_URL (see .env.example)
 cp .env.example backend/.env
 
-# 3. install + load data (~45 min first time: FPL CSVs + ClubElo + odds +
-#    Understat xG for ~1,300 players at a polite request rate; all cached)
+# 3. install + load data (~45 min on the first run; raw downloads are cached)
 cd backend
 uv sync
-uv run python -m pipeline.run_pipeline --all      # historical + live + external sources
+uv run python -m pipeline.run_pipeline --init --all
 
 # 4. train + predict (v2: two-stage model, walk-forward eval, SHAP drivers)
 uv run python -m ml.train_v2                       # prints per-fold report, saves artifacts
@@ -64,6 +61,12 @@ cd ../frontend
 npm install
 npm run dev                                        # http://localhost:3000
 ```
+
+`--all` loads historical and live FPL data, curated manager/set-piece/European
+competition data, ClubElo, football-data.co.uk odds, Understat, and
+international-tournament load. The slowest part is fetching Understat xG for
+about 1,300 players at a polite request rate. Each loader is idempotent and
+stores refetchable raw responses under `backend/data/raw/`.
 
 ## Loading into Supabase
 
@@ -80,9 +83,9 @@ from public sources, so nothing is lost. When the project is active again:
 ```bash
 cd backend
 echo 'DATABASE_URL=postgres://postgres.<ref>:<password>@<host>:5432/postgres' > .env
-uv run python -m pipeline.run_pipeline --init --all   # schema + 5 seasons + live sync (~5 min)
-uv run python -m ml.train                             # retrain (~1 min)
-uv run python -m ml.predict --horizon 5               # write predictions
+uv run python -m pipeline.run_pipeline --init --all   # schema + all data sources
+uv run python -m ml.train_v2                          # train/evaluate two-stage model
+uv run python -m ml.predict_v2 --horizon 5            # write v2 predictions + drivers
 ```
 
 `--init` applies `supabase/migrations/*.sql` and is safe to re-run; the whole
@@ -95,17 +98,44 @@ connects with database credentials) can read the tables.
 ```bash
 cd backend
 uv run python -m pipeline.run_pipeline --live      # new results, prices, flags
-uv run python -m ml.predict --horizon 5            # refresh predictions
+uv run python -m ml.predict_v2 --horizon 5         # refresh v2 predictions
 ```
 
-Retrain (`uv run python -m ml.train`) occasionally — e.g. monthly — so the
+Retrain (`uv run python -m ml.train_v2`) occasionally — e.g. monthly — so the
 model sees the newest completed gameweeks.
+
+The original single-stage workflow remains available as `python -m ml.train`
+and `python -m ml.predict` for regression comparisons.
+
+## Authentication
+
+The dashboard sits behind Supabase email+password login (invite-only — accounts
+are created in the Supabase dashboard, public signup is off). Every `/api/*`
+route except `/api/health` requires a valid Supabase access token, verified
+against the project's JWKS in `backend/app/auth.py`.
+
+Local setup: add `SUPABASE_URL` to `backend/.env`, and
+`NEXT_PUBLIC_SUPABASE_URL` plus `NEXT_PUBLIC_SUPABASE_ANON_KEY` to
+`frontend/.env.local`. See `.env.example`.
+
+## Deployment
+
+Frontend and backend deploy as two Vercel projects from this repo — see
+[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). The data pipeline stays local.
 
 ## Tests
 
 ```bash
-cd backend && uv run pytest        # optimizer rules + API smoke tests
+cd backend && uv run pytest        # optimizer rules + API smoke tests + auth
 ```
+
+## Evaluation artifacts
+
+- `docs/ablation_v2.md` — feature-group ablation and shipped feature set
+- `docs/metrics_lgbm-v2.json` — walk-forward v2 metrics
+- `docs/metrics_lgbm-v1-retrained.json` — like-for-like v1 comparison
+- `docs/elo_prob_params.json` — fitted Elo-to-result-probability calibration
+- `docs/FOOTBALL_DATA_API_SETUP.md` — optional football-data.org exact-minutes setup
 
 ## API
 

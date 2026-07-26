@@ -2,10 +2,10 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import text
 
 from app import queries
+from app.constants import MODEL_VERSION
 from app.db import engine
 from app.deps import current_season, next_gameweek
 from app.schemas import OptimalTeamOut, SquadPlayer
-from ml.train_v2 import MODEL_VERSION
 from optimizer.ilp import Candidate, optimize
 
 router = APIRouter(tags=["team"])

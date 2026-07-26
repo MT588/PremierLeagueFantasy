@@ -30,6 +30,9 @@ from pipeline.upsert import upsert
 log = logging.getLogger(__name__)
 
 CACHE_DIR = Path(__file__).resolve().parent.parent / "data" / "raw" / "international"
+WIKIMEDIA_USER_AGENT = (
+    "PLFantasy/1.0 (https://github.com/MT588/PremierLeagueFantasy)"
+)
 
 TOURNAMENTS = {
     ("WC", 2026): {
@@ -134,7 +137,7 @@ PLAYER_ROW = re.compile(
 def fetch_squads_wikitext(page: str) -> str:
     cache = CACHE_DIR / (re.sub(r"\W+", "_", page) + ".json")
     if cache.exists():
-        data = json.loads(cache.read_text())
+        data = json.loads(cache.read_text(encoding="utf-8"))
     else:
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
         resp = httpx.get(
@@ -146,12 +149,12 @@ def fetch_squads_wikitext(page: str) -> str:
                 "format": "json",
                 "formatversion": 2,
             },
-            headers={"User-Agent": "PLFantasy/1.0"},
+            headers={"User-Agent": WIKIMEDIA_USER_AGENT},
             timeout=60,
         )
         resp.raise_for_status()
         data = resp.json()
-        cache.write_text(resp.text)
+        cache.write_text(resp.text, encoding="utf-8")
     return data["parse"]["wikitext"]
 
 

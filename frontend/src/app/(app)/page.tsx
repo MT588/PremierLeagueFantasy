@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { api, PlayerRow } from "@/lib/api";
+import { PlayerRow } from "@/lib/api";
+import { api } from "@/lib/api.server";
 import { fmtPrice, POSITIONS } from "@/lib/ui";
-import { Card, RatingBadge, StatusBadge } from "@/components/ui";
+import { Card, RatingBadge, SectionTitle, StatusBadge } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,7 @@ export default async function Dashboard() {
 
   return (
     <div className="space-y-6">
+      <SectionTitle n={1}>Dashboard</SectionTitle>
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <div className="text-xs uppercase tracking-wide text-ink-3">Season</div>
