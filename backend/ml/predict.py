@@ -8,7 +8,7 @@ import pandas as pd
 from sqlalchemy import text
 
 from app.db import engine
-from ml.features import FEATURES, build_inference_frame
+from ml.features_v1 import FEATURES, build_inference_frame
 from ml.train import ARTIFACTS, MODEL_VERSION
 from pipeline.upsert import upsert
 

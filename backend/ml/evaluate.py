@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
 
-from ml.features import FEATURES, TARGET
+from ml.features_v1 import FEATURES, TARGET
 
 
 def _metrics(y_true: pd.Series, y_pred: np.ndarray, frame: pd.DataFrame) -> dict:

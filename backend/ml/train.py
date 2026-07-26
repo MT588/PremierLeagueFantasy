@@ -12,7 +12,7 @@ import lightgbm as lgb
 
 from app.db import engine
 from ml.evaluate import evaluation_report
-from ml.features import FEATURES, TARGET, build_training_frame
+from ml.features_v1 import FEATURES, TARGET, build_training_frame
 
 log = logging.getLogger(__name__)
 
