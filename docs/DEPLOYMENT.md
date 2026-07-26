@@ -1,11 +1,12 @@
 # Deployment: Supabase auth + Vercel
 
-The app deploys as **two Vercel projects from this one repo**:
+The app is deployed as **two Vercel projects from this one repo**, both under the
+`maartens-projects-8aef4975` scope:
 
-| Vercel project | Root Directory | What it serves |
+| Vercel project | Root Directory | URL |
 | --- | --- | --- |
-| `plfantasy-web` (suggested name) | `frontend` | The Next.js dashboard |
-| `plfantasy-api` (suggested name) | `backend` | The FastAPI API as a serverless function |
+| `plfantasy-web` | `frontend` | https://plfantasy-web.vercel.app |
+| `plfantasy-api` | `backend` | https://plfantasy-api.vercel.app |
 
 Login is Supabase email+password, invite-only. Every `/api/*` route except
 `/api/health` requires a valid Supabase access token.
@@ -58,10 +59,22 @@ cd backend
 vercel link                                   # create project, e.g. plfantasy-api
 vercel env add DATABASE_URL production        # TRANSACTION pooler, port 6543 (see below)
 vercel env add SUPABASE_URL production        # https://<ref>.supabase.co
-vercel env add CORS_ORIGINS production        # placeholder for now, fixed in step 3
-vercel env add CORS_ORIGIN_REGEX production   # ^https://plfantasy-web.*\.vercel\.app$
+vercel env add CORS_ORIGINS production        # https://plfantasy-web.vercel.app,http://localhost:3000
+vercel env add CORS_ORIGIN_REGEX production   # see below
 vercel deploy --prod
 ```
+
+`CORS_ORIGIN_REGEX` exists so preview deployments are allowed too. Watch the
+URL shape here: Vercel **truncates the project name** in generated URLs, so a
+`plfantasy-web` deployment is served from `plfantasy-<hash>-<scope>.vercel.app`,
+not `plfantasy-web-<hash>-…`. The working value is
+
+```
+^https://plfantasy-[a-z0-9]+-maartens-projects-8aef4975\.vercel\.app$
+```
+
+Scoping it to the account slug rather than using a bare `.*\.vercel\.app` keeps
+unrelated Vercel sites from being allowed to call the API.
 
 `DATABASE_URL` must be the **transaction** pooler string from Supabase →
 Connect, on port **6543** (not the 5432 session pooler used locally):
@@ -100,14 +113,11 @@ vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production
 vercel deploy --prod
 ```
 
-### 3. Close the CORS loop
+### 3. Redeploys
 
-```bash
-cd backend
-vercel env rm CORS_ORIGINS production
-vercel env add CORS_ORIGINS production   # https://<web>.vercel.app,http://localhost:3000
-vercel deploy --prod
-```
+Changing any backend env var needs `vercel deploy --prod` from `backend/` to
+take effect. Changing a `NEXT_PUBLIC_*` var needs a frontend redeploy, because
+those are inlined at build time.
 
 ### 4. Optional: deploy on git push
 
