@@ -13,12 +13,14 @@ from ml.features import (
     career,
     context,
     form,
+    form_eb,
     manager,
     market,
     meta,
     opponent,
     schedule,
     setpiece,
+    tournament,
     understat_group,
 )
 from ml.features.base import build_stubs, load_history, sort_player_time
@@ -33,6 +35,9 @@ FEATURES_BY_GROUP: dict[str, list[str]] = {
     "manager": manager.FEATURES,
     "setpiece": setpiece.FEATURES,
     "meta": meta.FEATURES,
+    # v3 additions
+    "form_eb": form_eb.FEATURES,
+    "tournament": tournament.FEATURES,
 }
 
 # Shipped feature set, selected by ablation on the 2025-26 fold (see
@@ -45,6 +50,36 @@ FEATURES_BY_GROUP: dict[str, list[str]] = {
 SELECTED_GROUPS: list[str] = ["form", "meta", "career", "understat", "setpiece"]
 
 FEATURES: list[str] = [f for g in SELECTED_GROUPS for f in FEATURES_BY_GROUP[g]]
+
+# v3 pool. The component models in ml/components/ draw from this and the
+# ablation (ml/ablation_v3.py -> docs/ablation_v3.md) prunes it. Unlike v2's
+# single regressor, a per-component model can use opponent/market/schedule
+# context sensibly — a clean-sheet model wants exactly those — so nothing is
+# excluded up front.
+#
+# `tournament` is computed but NOT shipped. Measured on the v2 architecture
+# (ml/eval_form_fix.py -> docs/form_fix_v3.json) it moved nothing: the points
+# stage got slightly worse on the one fold able to learn it (2025-26 GW1-8 MAE
+# 1.0502 -> 1.0528) and the minutes stage moved by 3e-5. Only folds whose
+# training seasons contain a summer tournament can learn the group at all,
+# which today means a single fold — too little to ship on. The loader behind it
+# still earns its place: international_load now holds exact parsed minutes,
+# starts and goals instead of a squad-membership proxy, which feeds the
+# `schedule` group's intl features.
+SELECTED_GROUPS_V3: list[str] = [
+    "form",
+    "form_eb",
+    "meta",
+    "career",
+    "understat",
+    "setpiece",
+    "opponent",
+    "market",
+    "schedule",
+    "manager",
+]
+
+FEATURES_V3: list[str] = [f for g in SELECTED_GROUPS_V3 for f in FEATURES_BY_GROUP[g]]
 
 TARGET = "total_points"
 
@@ -125,6 +160,27 @@ FEATURE_LABELS: dict[str, str] = {
     "own_overall": "Team overall strength (FPL)",
     "opp_defence": "Opponent defence strength (FPL)",
     "opp_overall": "Opponent overall strength (FPL)",
+    "eb_points_pg": "Points per game (form blended with prior)",
+    "eb_minutes": "Minutes per game (blended)",
+    "eb_start_share": "Start rate (blended)",
+    "eb_goals90": "Goals per 90 (blended)",
+    "eb_assists90": "Assists per 90 (blended)",
+    "eb_xg90": "Expected goals per 90 (blended)",
+    "eb_xa90": "Expected assists per 90 (blended)",
+    "eb_xgi90": "Expected involvements per 90 (blended)",
+    "eb_bps": "Bonus system score per game (blended)",
+    "eb_dc90": "Defensive actions per 90 (blended)",
+    "games_played_season": "Games played this season",
+    "minutes90_season": "90s played this season",
+    "eb_weight_cur": "Weight on this season vs last",
+    "is_new_to_club": "New club since last appearance",
+    "tour_minutes_decayed": "Summer tournament minutes (fading)",
+    "tour_starts_share": "Started share at the tournament",
+    "tour_goals90": "Tournament goals per 90",
+    "tour_matches": "Tournament matches played",
+    "tour_progress": "How far his nation went",
+    "tour_days_rest": "Days since his last tournament match",
+    "tour_decay": "How recent the tournament is",
 }
 
 
@@ -150,6 +206,9 @@ def add_all_features(
     df = manager.add(df, ctx)
     df = setpiece.add(df, ctx)
     df = understat_group.add(df, ctx)
+    df = tournament.add(df, ctx)
+    # last: its priors borrow the Understat career rates computed just above
+    df = form_eb.add(df, ctx)
     return df
 
 
