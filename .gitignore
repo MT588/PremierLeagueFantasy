@@ -1,0 +1,22 @@
+# env / secrets
+.env
+*.env.local
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# data & model artifacts
+backend/data/raw/
+backend/ml/artifacts/
+
+# node
+node_modules/
+.next/
+out/
+
+# misc
+.DS_Store
