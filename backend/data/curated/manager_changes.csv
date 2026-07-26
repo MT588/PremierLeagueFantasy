@@ -1,0 +1,116 @@
+team_code,manager_name,start_date,end_date,is_caretaker,source
+3,Mikel Arteta,2019-12-20,,false,wikipedia
+7,Dean Smith,2018-10-10,2021-11-07,false,wikipedia
+7,Steven Gerrard,2021-11-11,2022-10-20,false,wikipedia
+7,Aaron Danks,2022-10-21,2022-11-01,true,wikipedia
+7,Unai Emery,2022-11-01,,false,wikipedia
+91,Scott Parker,2021-06-28,2022-08-30,false,wikipedia
+91,Gary O'Neil,2022-08-30,2023-06-19,false,wikipedia
+91,Andoni Iraola,2023-06-19,2026-05-24,false,wikipedia
+91,Marco Rose,2026-06-01,,false,wikipedia
+94,Thomas Frank,2018-10-16,2025-06-12,false,wikipedia
+94,Keith Andrews,2025-06-27,,false,wikipedia
+36,Graham Potter,2019-05-20,2022-09-08,false,wikipedia
+36,Roberto De Zerbi,2022-09-18,2024-05-19,false,wikipedia
+36,Fabian Hurzeler,2024-06-15,,false,wikipedia
+90,Sean Dyche,2012-10-30,2022-04-15,false,wikipedia
+90,Mike Jackson,2022-04-15,2022-06-14,true,wikipedia
+90,Vincent Kompany,2022-06-14,2024-05-29,false,wikipedia
+90,Scott Parker,2024-07-05,2026-04-30,false,wikipedia
+90,Mike Jackson,2026-04-30,2026-06-30,true,wikipedia
+8,Thomas Tuchel,2021-01-26,2022-09-07,false,wikipedia
+8,Graham Potter,2022-09-08,2023-04-02,false,wikipedia
+8,Bruno Saltor,2023-04-02,2023-04-06,true,wikipedia
+8,Frank Lampard,2023-04-06,2023-05-28,true,wikipedia
+8,Mauricio Pochettino,2023-05-29,2024-05-21,false,wikipedia
+8,Enzo Maresca,2024-06-03,2026-01-01,false,wikipedia
+8,Caretaker (interregnum),2026-01-01,2026-01-08,true,gap-fill
+8,Liam Rosenior,2026-01-08,2026-04-22,false,wikipedia
+8,Calum McFarlane,2026-04-22,2026-06-30,true,wikipedia
+8,Xabi Alonso,2026-07-01,,false,wikipedia
+9,Frank Lampard,2024-11-25,,false,wikipedia
+31,Patrick Vieira,2021-07-04,2023-03-17,false,wikipedia
+31,Paddy McCarthy,2023-03-17,2023-03-21,true,wikipedia
+31,Roy Hodgson,2023-03-21,2024-02-19,false,wikipedia
+31,Oliver Glasner,2024-02-19,2026-05-27,false,wikipedia
+31,Pierre Sage,2026-06-15,,false,wikipedia
+11,Rafael Benitez,2021-06-30,2022-01-16,false,wikipedia
+11,Duncan Ferguson,2022-01-18,2022-01-31,true,wikipedia
+11,Frank Lampard,2022-01-31,2023-01-23,false,wikipedia
+11,Sean Dyche,2023-01-30,2025-01-09,false,wikipedia
+11,Leighton Baines,2025-01-09,2025-01-11,true,wikipedia
+11,David Moyes,2025-01-11,,false,wikipedia
+54,Marco Silva,2021-07-01,2026-06-02,false,wikipedia
+54,Alvaro Arbeloa,2026-07-07,,false,wikipedia
+88,Sergej Jakirovic,2025-06-01,,false,estimated-promotion-season
+40,Kieran McKenna,2021-12-16,2026-06-10,false,wikipedia
+40,Gary O'Neil,2026-06-23,,false,wikipedia
+2,Marcelo Bielsa,2018-06-15,2022-02-27,false,wikipedia
+2,Jesse Marsch,2022-02-28,2023-02-06,false,wikipedia
+2,Michael Skubala,2023-02-06,2023-02-21,true,wikipedia
+2,Javi Gracia,2023-02-21,2023-05-03,false,wikipedia
+2,Sam Allardyce,2023-05-03,2023-06-30,false,wikipedia
+2,Daniel Farke,2023-07-04,,false,wikipedia
+13,Brendan Rodgers,2019-02-26,2023-04-02,false,wikipedia
+13,Adam Sadler,2023-04-04,2023-04-10,true,wikipedia
+13,Dean Smith,2023-04-10,2023-06-26,false,wikipedia
+13,Enzo Maresca,2023-06-26,2024-06-03,false,wikipedia
+13,Steve Cooper,2024-06-20,2024-11-24,false,wikipedia
+13,Ben Dawson,2024-11-24,2024-12-01,true,wikipedia
+13,Ruud van Nistelrooy,2024-12-01,2025-06-30,false,wikipedia
+14,Jurgen Klopp,2015-10-08,2024-05-19,false,wikipedia
+14,Arne Slot,2024-06-01,2026-05-30,false,wikipedia
+14,Andoni Iraola,2026-06-04,,false,wikipedia
+102,Rob Edwards,2022-11-17,2025-01-09,false,wikipedia
+43,Pep Guardiola,2016-07-01,2026-05-24,false,wikipedia
+43,Enzo Maresca,2026-06-29,,false,wikipedia
+1,Ole Gunnar Solskjaer,2018-12-19,2021-11-21,false,wikipedia
+1,Michael Carrick,2021-11-21,2021-12-03,true,wikipedia
+1,Ralf Rangnick,2021-12-03,2022-05-22,true,wikipedia
+1,Erik ten Hag,2022-05-23,2024-10-28,false,wikipedia
+1,Ruud van Nistelrooy,2024-10-28,2024-11-11,true,wikipedia
+1,Ruben Amorim,2024-11-11,2026-01-05,false,wikipedia
+1,Caretaker (interregnum),2026-01-05,2026-01-13,true,gap-fill
+1,Michael Carrick,2026-01-13,,false,wikipedia
+4,Steve Bruce,2019-07-17,2021-10-20,false,wikipedia
+4,Graeme Jones,2021-10-20,2021-11-08,true,wikipedia
+4,Eddie Howe,2021-11-08,,false,wikipedia
+45,Daniel Farke,2017-05-25,2021-11-06,false,wikipedia
+45,Dean Smith,2021-11-15,2022-06-30,false,wikipedia
+17,Steve Cooper,2021-09-21,2023-12-19,false,wikipedia
+17,Nuno Espirito Santo,2023-12-20,2025-09-08,false,wikipedia
+17,Ange Postecoglou,2025-09-09,2025-10-18,false,wikipedia
+17,Sean Dyche,2025-10-21,2026-02-12,false,wikipedia
+17,Vitor Pereira,2026-02-15,2026-07-02,false,wikipedia
+17,Oliver Glasner,2026-07-06,,false,wikipedia
+49,Paul Heckingbottom,2021-11-25,2023-12-05,false,wikipedia
+49,Chris Wilder,2023-12-05,2024-06-30,false,wikipedia
+20,Ralph Hasenhuttl,2018-12-06,2022-11-07,false,wikipedia
+20,Nathan Jones,2022-11-10,2023-02-12,false,wikipedia
+20,Ruben Selles,2023-02-12,2023-06-21,false,wikipedia
+20,Russell Martin,2023-06-21,2024-12-15,false,wikipedia
+20,Ivan Juric,2024-12-21,2025-04-07,false,wikipedia
+20,Simon Rusk,2025-04-07,2025-06-30,true,wikipedia
+6,Nuno Espirito Santo,2021-06-30,2021-11-01,false,wikipedia
+6,Antonio Conte,2021-11-02,2023-03-26,false,wikipedia
+6,Cristian Stellini,2023-03-26,2023-04-24,true,wikipedia
+6,Ryan Mason,2023-04-24,2023-06-06,true,wikipedia
+6,Ange Postecoglou,2023-06-06,2025-06-06,false,wikipedia
+6,Thomas Frank,2025-06-12,2026-02-11,false,wikipedia
+6,Igor Tudor,2026-02-14,2026-03-29,false,wikipedia
+6,Roberto De Zerbi,2026-03-31,,false,wikipedia
+56,Regis Le Bris,2024-06-24,,false,wikipedia
+57,Xisco Munoz,2020-12-22,2021-10-03,false,wikipedia
+57,Claudio Ranieri,2021-10-04,2022-01-24,false,wikipedia
+57,Roy Hodgson,2022-01-25,2022-06-30,false,wikipedia
+21,David Moyes,2019-12-29,2024-06-30,false,wikipedia
+21,Julen Lopetegui,2024-07-01,2025-01-08,false,wikipedia
+21,Graham Potter,2025-01-09,2025-09-27,false,wikipedia
+21,Nuno Espirito Santo,2025-09-27,,false,wikipedia
+39,Bruno Lage,2021-06-09,2022-10-02,false,wikipedia
+39,Steve Davis,2022-10-02,2022-11-14,true,wikipedia
+39,Julen Lopetegui,2022-11-14,2023-08-08,false,wikipedia
+39,Gary O'Neil,2023-08-09,2024-12-15,false,wikipedia
+39,Vitor Pereira,2024-12-19,2025-11-02,false,wikipedia
+39,Caretaker (interregnum),2025-11-02,2025-11-12,true,gap-fill
+39,Rob Edwards,2025-11-12,,false,wikipedia

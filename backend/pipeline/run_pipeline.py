@@ -21,6 +21,13 @@ TABLES = [
     "fixtures",
     "player_gameweeks",
     "predictions",
+    "club_elo",
+    "match_odds",
+    "understat_players",
+    "understat_matches",
+    "manager_stints",
+    "international_load",
+    "european_competitions",
 ]
 
 
@@ -55,6 +62,11 @@ def main() -> None:
     parser.add_argument(
         "--live", action="store_true", help="sync current season from FPL API"
     )
+    parser.add_argument("--curated", action="store_true", help="manager stints, euro flags, set pieces")
+    parser.add_argument("--clubelo", action="store_true", help="ClubElo ratings history")
+    parser.add_argument("--odds", action="store_true", help="football-data.co.uk match odds")
+    parser.add_argument("--understat", action="store_true", help="Understat xG per match")
+    parser.add_argument("--international", action="store_true", help="WC/EURO tournament load")
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--seasons", nargs="*", help="subset of seasons, e.g. 2024-25")
     args = parser.parse_args()
@@ -69,6 +81,26 @@ def main() -> None:
         from pipeline.ingest_live import sync_live
 
         sync_live(engine)
+    if args.curated or args.all:
+        from pipeline.load_curated import load_curated
+
+        load_curated(engine)
+    if args.clubelo or args.all:
+        from pipeline.ingest_clubelo import ingest_clubelo
+
+        ingest_clubelo(engine)
+    if args.odds or args.all:
+        from pipeline.ingest_odds import ingest_odds
+
+        ingest_odds(engine)
+    if args.understat or args.all:
+        from pipeline.ingest_understat import ingest_understat
+
+        ingest_understat(engine)
+    if args.international or args.all:
+        from pipeline.ingest_international import ingest_international
+
+        ingest_international(engine)
     print_counts()
 
 
