@@ -55,6 +55,10 @@ PGW_COLUMNS = {
     "transfers_out": "transfers_out",
     "defensive_contribution": "defensive_contribution",
     "starts": "starts",
+    # 2025-26 onward only (the defensive-contribution rule's inputs)
+    "tackles": "tackles",
+    "clearances_blocks_interceptions": "clearances_blocks_interceptions",
+    "recoveries": "recoveries",
 }
 
 

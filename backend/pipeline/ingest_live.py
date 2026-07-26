@@ -43,6 +43,9 @@ HISTORY_COLUMNS = {
     "transfers_out": "transfers_out",
     "defensive_contribution": "defensive_contribution",
     "starts": "starts",
+    "tackles": "tackles",
+    "clearances_blocks_interceptions": "clearances_blocks_interceptions",
+    "recoveries": "recoveries",
 }
 
 

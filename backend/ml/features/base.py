@@ -14,6 +14,11 @@ select
   g.fpl_fixture_id, g.was_home, g.minutes, g.total_points, g.goals_scored,
   g.assists, g.bonus, g.bps, g.ict_index,
   g.expected_goals, g.expected_assists, g.expected_goal_involvements,
+  -- v3 component labels: every countable event the scoring matrix prices
+  g.clean_sheets, g.goals_conceded, g.saves, g.yellow_cards, g.red_cards,
+  g.own_goals, g.penalties_saved, g.penalties_missed, g.expected_goals_conceded,
+  g.defensive_contribution, g.tackles, g.clearances_blocks_interceptions,
+  g.recoveries, g.starts, g.selected_by, g.transfers_in, g.transfers_out,
   g.value, ps.position, ps.team_code, g.opponent_team_code, f.kickoff_time,
   case when g.was_home then f.home_difficulty else f.away_difficulty end as fdr,
   case when g.was_home then own.strength_attack_home else own.strength_attack_away end as own_attack,
