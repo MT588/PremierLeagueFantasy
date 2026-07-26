@@ -19,7 +19,14 @@ export const nameCol: Col = {
   label: "Player",
   render: (p) => (
     <>
-      <Link href={`/players/${p.code}`} className="hover:text-pitch hover:underline">
+      {/* /players/[code] is force-dynamic, so it has no static shell to
+          prefetch and Next answers the prefetch with a 404 it retries every
+          10s. With up to 300 rows on screen that is a lot of dead requests. */}
+      <Link
+        href={`/players/${p.code}`}
+        prefetch={false}
+        className="hover:text-pitch hover:underline"
+      >
         {p.web_name}
       </Link>
       {p.chance_of_playing === 0 && (

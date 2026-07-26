@@ -11,6 +11,8 @@ function PlayerCard({ p }: { p: SquadPlayer }) {
   return (
     <Link
       href={`/players/${p.code}`}
+      // Dynamic route, nothing to prefetch — see columns.tsx.
+      prefetch={false}
       className="relative flex w-24 flex-col items-center rounded-lg border border-hairline bg-surface/90 px-2 py-2 text-center shadow-sm transition-colors hover:border-accent sm:w-28"
     >
       {p.is_captain && (

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Suspense } from "react";
 import { MetaStrip } from "@/components/MetaStrip";
 import { Sidebar } from "@/components/Sidebar";
 
@@ -20,9 +19,7 @@ export default function AppLayout({
             Fixture &amp; Form Dashboard
           </h1>
         </Link>
-        <Suspense fallback={null}>
-          <MetaStrip />
-        </Suspense>
+        <MetaStrip />
       </header>
 
       <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col items-stretch lg:flex-row lg:items-start">

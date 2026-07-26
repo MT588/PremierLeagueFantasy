@@ -14,6 +14,8 @@ function TopBarList({ players }: { players: PlayerRow[] }) {
         <li key={p.code}>
           <Link
             href={`/players/${p.code}`}
+            // Dynamic route, nothing to prefetch — see columns.tsx.
+            prefetch={false}
             className="group grid grid-cols-[1.5rem_11rem_1fr_3rem] items-center gap-3"
           >
             <span className="text-right text-xs tabular-nums text-ink-3">{i + 1}</span>
@@ -82,7 +84,11 @@ export default async function Dashboard() {
             <ul className="space-y-2.5">
               {rows.map((p) => (
                 <li key={p.code} className="flex items-center justify-between gap-2 text-sm">
-                  <Link href={`/players/${p.code}`} className="truncate hover:text-accent">
+                  <Link
+                    href={`/players/${p.code}`}
+                    prefetch={false}
+                    className="truncate hover:text-accent"
+                  >
                     {p.web_name}
                     <span className="ml-1.5 text-xs text-ink-3">{p.team_short}</span>
                     <span className="ml-1.5 align-middle">

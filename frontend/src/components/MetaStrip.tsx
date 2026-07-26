@@ -1,17 +1,31 @@
-import { unstable_rethrow } from "next/navigation";
-import { api } from "@/lib/api.server";
+"use client";
+
+import { useEffect, useState } from "react";
+import { Meta } from "@/lib/api";
+import { api } from "@/lib/api.client";
 
 /** Season / gameweek / model freshness line in the topbar. Replaces the
  *  source page's manual "refresh live data" button — our data is ingested
- *  server-side, so there is nothing for the browser to fetch or rate-limit. */
-export async function MetaStrip() {
-  let meta;
-  try {
-    meta = await api.meta();
-  } catch (e) {
-    // The API client redirects to /login by throwing; that must not be caught
-    // here or an expired session would render as an API outage.
-    unstable_rethrow(e);
+ *  server-side, so there is nothing for the browser to fetch or rate-limit.
+ *
+ *  Read in the browser rather than on the server on purpose. This sits in the
+ *  (app) layout, so a server-side session read here makes every route under
+ *  that layout dynamic; Next then has no static shell to prefetch and answers
+ *  every <Link> prefetch with a 404. */
+export function MetaStrip() {
+  const [meta, setMeta] = useState<Meta | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    // The API client sends an expired session to /login itself, so a rejection
+    // here means the API is genuinely unreachable.
+    api
+      .meta()
+      .then(setMeta)
+      .catch(() => setFailed(true));
+  }, []);
+
+  if (failed) {
     return (
       <div className="flex items-center gap-2 text-[13px] text-[#F0C9C4]">
         <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#C0392B]" />
@@ -19,6 +33,9 @@ export async function MetaStrip() {
       </div>
     );
   }
+
+  if (!meta) return null;
+
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-[#D9D5C4]">
       <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#4C9A6A]" />

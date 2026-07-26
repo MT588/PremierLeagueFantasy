@@ -5,10 +5,16 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 
-const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
+/** `prefetch: false` marks a force-dynamic route: it has no static shell, so
+ *  Next answers the prefetch with a 404 and retries it every 10 seconds for as
+ *  long as the sidebar is on screen — which is always. */
+const GROUPS: {
+  label: string;
+  items: { href: string; label: string; prefetch?: false }[];
+}[] = [
   {
     label: "Overview",
-    items: [{ href: "/", label: "Dashboard" }],
+    items: [{ href: "/", label: "Dashboard", prefetch: false }],
   },
   {
     label: "Analysis",
@@ -76,6 +82,7 @@ export function Sidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={item.prefetch}
                     // Otherwise the drawer stays over the page you just opened.
                     onClick={() => setOpen(false)}
                     aria-current={active ? "page" : undefined}
