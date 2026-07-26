@@ -16,7 +16,7 @@ import time
 from pathlib import Path
 
 import httpx
-from sqlalchemy import Engine, text
+from sqlalchemy import Engine
 
 from pipeline.match_players import match_epl_players, match_foreign_players
 from pipeline.upsert import upsert
@@ -28,9 +28,9 @@ BASE = "https://understat.com"
 HEADERS = {"User-Agent": "Mozilla/5.0", "X-Requested-With": "XMLHttpRequest"}
 
 LEAGUES = ["EPL", "La_liga", "Bundesliga", "Serie_A", "Ligue_1", "RFPL"]
-MAP_SEASONS = list(range(2019, 2026))       # team->league map + foreign pools
+MAP_SEASONS = list(range(2019, 2026))  # team->league map + foreign pools
 EPL_MATCH_SEASONS = list(range(2021, 2026))  # seasons we match identities for
-MIN_MATCH_SEASON = 2018                      # oldest per-match rows we store
+MIN_MATCH_SEASON = 2018  # oldest per-match rows we store
 
 _last_request = 0.0
 
@@ -59,7 +59,9 @@ def fetch_players_stats(league: str, season: int) -> list[dict]:
         return json.loads(cache.read_text())["players"]
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     resp = _throttled_request(
-        "POST", f"{BASE}/main/getPlayersStats/", data={"league": league, "season": season}
+        "POST",
+        f"{BASE}/main/getPlayersStats/",
+        data={"league": league, "season": season},
     )
     data = resp.json()
     if not data.get("success"):
@@ -88,13 +90,17 @@ def build_team_league_map() -> dict[str, str]:
     return team_league
 
 
-def matches_to_rows(understat_id: int, payload: dict, team_league: dict[str, str]) -> list[dict]:
+def matches_to_rows(
+    understat_id: int, payload: dict, team_league: dict[str, str]
+) -> list[dict]:
     rows: dict[int, dict] = {}
     for m in payload.get("matches", []):
         season = int(m["season"])
         if season < MIN_MATCH_SEASON:
             continue
-        league = team_league.get(m["h_team"]) or team_league.get(m["a_team"]) or "unknown"
+        league = (
+            team_league.get(m["h_team"]) or team_league.get(m["a_team"]) or "unknown"
+        )
         rows[int(m["id"])] = (  # dict keyed by match id dedups repeated entries
             {
                 "understat_id": understat_id,
@@ -139,14 +145,18 @@ def ingest_understat(engine: Engine) -> None:
     log.info("understat_players: %d rows", n)
 
     matched = [r for r in identities if r["player_code"] is not None]
-    total_rows, done = 0, 0
-    for row in matched:
+    total_rows = 0
+    for done, row in enumerate(matched, start=1):
         payload = fetch_player_data(row["understat_id"])
         rows = matches_to_rows(row["understat_id"], payload, team_league)
         total_rows += upsert(
             engine, "understat_matches", rows, ["understat_id", "understat_match_id"]
         )
-        done += 1
         if done % 100 == 0:
-            log.info("understat: %d/%d players fetched (%d match rows)", done, len(matched), total_rows)
+            log.info(
+                "understat: %d/%d players fetched (%d match rows)",
+                done,
+                len(matched),
+                total_rows,
+            )
     log.info("understat_matches: %d rows for %d players", total_rows, len(matched))

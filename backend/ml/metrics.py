@@ -7,7 +7,9 @@ from scipy.stats import spearmanr
 POSITION_NAMES = {1: "GK", 2: "DEF", 3: "MID", 4: "FWD"}
 
 
-def points_metrics(frame: pd.DataFrame, preds: np.ndarray, target: str = "total_points") -> dict:
+def points_metrics(
+    frame: pd.DataFrame, preds: np.ndarray, target: str = "total_points"
+) -> dict:
     y = frame[target].to_numpy(dtype=float)
     err = np.abs(y - preds)
     out = {

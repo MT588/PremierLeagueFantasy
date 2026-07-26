@@ -17,10 +17,17 @@ supabase/   SQL migrations (plain Postgres, works on Supabase or local)
   [vaastav/Fantasy-Premier-League](https://github.com/vaastav/Fantasy-Premier-League),
   current season synced live from the official FPL API. Players and teams are
   keyed on their stable cross-season `code`, not the per-season element id.
-- **Model**: single LightGBM regressor on leakage-safe rolling features (form,
-  minutes, xG/xA per 90, fixture difficulty, team strengths, previous-season
-  PPG). Backtest on held-out 2025-26: MAE 0.97 vs 1.05 for a last-5-average
-  baseline, per-gameweek Spearman 0.71.
+- **Model (v2)**: two-stage LightGBM — a 3-class minutes model (out/cameo/
+  start) combined with a points-given-start regressor. Features span rolling
+  form, multi-season class, Understat shot quality (cross-league for new
+  signings, xG backfill for 2021-22), set-piece duties, plus ClubElo/manager/
+  schedule/international-load context for the minutes stage. Feature groups
+  selected by ablation (docs/ablation_v2.md). Walk-forward on 2025-26:
+  MAE 0.951 vs 1.05 last-5 baseline, per-GW Spearman 0.72; per-prediction
+  SHAP drivers stored for the UI. External sources: ClubElo Elo ratings,
+  football-data.co.uk odds (calibrating an Elo→probability map), Understat
+  (6 leagues), Wikipedia squads/manager data. See docs/HANDOVER.md for the
+  full state of the v2 build.
 - **Optimizer**: PuLP/CBC integer program — 15-man squad, starting XI, captain
   and bench under budget, 2-5-5-3 squad shape, max 3 per club and a legal
   formation, maximizing predicted points over a 1–5 gameweek horizon.
@@ -39,14 +46,15 @@ psql -d plfantasy -f supabase/migrations/0001_core_schema.sql
 # 2. backend config — set DATABASE_URL (see .env.example)
 cp .env.example backend/.env
 
-# 3. install + load data (downloads ~90MB of CSVs, a few minutes)
+# 3. install + load data (~45 min first time: FPL CSVs + ClubElo + odds +
+#    Understat xG for ~1,300 players at a polite request rate; all cached)
 cd backend
 uv sync
-uv run python -m pipeline.run_pipeline --all      # historical + live sync
+uv run python -m pipeline.run_pipeline --all      # historical + live + external sources
 
-# 4. train + predict
-uv run python -m ml.train                          # prints backtest report
-uv run python -m ml.predict --horizon 5            # writes predictions table
+# 4. train + predict (v2: two-stage model, walk-forward eval, SHAP drivers)
+uv run python -m ml.train_v2                       # prints per-fold report, saves artifacts
+uv run python -m ml.predict_v2 --horizon 5         # writes predictions with drivers
 
 # 5. run the API
 uv run uvicorn app.main:app --port 8000

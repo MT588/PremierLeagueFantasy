@@ -13,7 +13,6 @@ import httpx
 import pandas as pd
 from sqlalchemy import Engine, text
 
-from pipeline.ingest_vaastav import records
 from pipeline.team_names import TEAM_NAMES
 from pipeline.upsert import upsert
 
@@ -56,7 +55,9 @@ def ingest_odds(engine: Engine) -> None:
     name_to_code = {names[2]: code for code, names in TEAM_NAMES.items()}
 
     with engine.connect() as conn:
-        seasons = conn.execute(text("select id, name from seasons order by start_year")).all()
+        seasons = conn.execute(
+            text("select id, name from seasons order by start_year")
+        ).all()
         fixtures = pd.read_sql(
             text(
                 "select season_id, fpl_fixture_id, home_team_code, away_team_code, "
@@ -101,5 +102,7 @@ def ingest_odds(engine: Engine) -> None:
         unmatched_all += unmatched
 
     if unmatched_all:
-        log.warning("odds: %d unmatched matches: %s", len(unmatched_all), unmatched_all[:10])
+        log.warning(
+            "odds: %d unmatched matches: %s", len(unmatched_all), unmatched_all[:10]
+        )
     log.info("match_odds: %d rows", total)

@@ -62,11 +62,21 @@ def main() -> None:
     parser.add_argument(
         "--live", action="store_true", help="sync current season from FPL API"
     )
-    parser.add_argument("--curated", action="store_true", help="manager stints, euro flags, set pieces")
-    parser.add_argument("--clubelo", action="store_true", help="ClubElo ratings history")
-    parser.add_argument("--odds", action="store_true", help="football-data.co.uk match odds")
-    parser.add_argument("--understat", action="store_true", help="Understat xG per match")
-    parser.add_argument("--international", action="store_true", help="WC/EURO tournament load")
+    parser.add_argument(
+        "--curated", action="store_true", help="manager stints, euro flags, set pieces"
+    )
+    parser.add_argument(
+        "--clubelo", action="store_true", help="ClubElo ratings history"
+    )
+    parser.add_argument(
+        "--odds", action="store_true", help="football-data.co.uk match odds"
+    )
+    parser.add_argument(
+        "--understat", action="store_true", help="Understat xG per match"
+    )
+    parser.add_argument(
+        "--international", action="store_true", help="WC/EURO tournament load"
+    )
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--seasons", nargs="*", help="subset of seasons, e.g. 2024-25")
     args = parser.parse_args()

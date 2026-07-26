@@ -4,7 +4,6 @@ from sqlalchemy import text
 from app import queries
 from app.db import engine
 from app.deps import current_season, next_gameweek
-from ml.train_v2 import MODEL_VERSION
 from app.schemas import (
     FixtureOut,
     GameweekPoint,
@@ -12,6 +11,7 @@ from app.schemas import (
     PlayerRow,
     PredictionOut,
 )
+from ml.train_v2 import MODEL_VERSION
 
 router = APIRouter(tags=["players"])
 
@@ -41,7 +41,11 @@ def list_players(
         rows = (
             conn.execute(
                 text(queries.PLAYERS_LIST),
-                {"season_id": season_id, "gameweek": gw, "model_version": MODEL_VERSION},
+                {
+                    "season_id": season_id,
+                    "gameweek": gw,
+                    "model_version": MODEL_VERSION,
+                },
             )
             .mappings()
             .all()

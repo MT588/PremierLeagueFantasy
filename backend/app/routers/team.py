@@ -26,7 +26,11 @@ def optimal_team(
         rows = (
             conn.execute(
                 text(queries.OPTIMIZER_CANDIDATES),
-                {"season_id": season_id, "gameweeks": gameweeks, "model_version": MODEL_VERSION},
+                {
+                    "season_id": season_id,
+                    "gameweeks": gameweeks,
+                    "model_version": MODEL_VERSION,
+                },
             )
             .mappings()
             .all()

@@ -29,23 +29,30 @@ def train(
     fit_started = fit[fit["minutes"] >= 60]
     valid_started = valid[valid["minutes"] >= 60]
     dtrain = lgb.Dataset(
-        fit_started[features], label=fit_started["total_points"],
+        fit_started[features],
+        label=fit_started["total_points"],
         categorical_feature=["position"] if "position" in features else [],
     )
     dvalid = lgb.Dataset(
         valid_started[features], label=valid_started["total_points"], reference=dtrain
     )
     return lgb.train(
-        PARAMS, dtrain, num_boost_round=2000, valid_sets=[dvalid],
+        PARAMS,
+        dtrain,
+        num_boost_round=2000,
+        valid_sets=[dvalid],
         callbacks=[lgb.early_stopping(100, verbose=False)],
     )
 
 
-def refit(full: pd.DataFrame, best_iteration: int, features: list[str] | None = None) -> lgb.Booster:
+def refit(
+    full: pd.DataFrame, best_iteration: int, features: list[str] | None = None
+) -> lgb.Booster:
     features = features or FEATURES
     started = full[full["minutes"] >= 60]
     dtrain = lgb.Dataset(
-        started[features], label=started["total_points"],
+        started[features],
+        label=started["total_points"],
         categorical_feature=["position"] if "position" in features else [],
     )
     return lgb.train(PARAMS, dtrain, num_boost_round=max(best_iteration, 10))
@@ -58,8 +65,10 @@ def cameo_means(fit: pd.DataFrame) -> dict[int, float]:
 
 
 def combine(
-    points_pred: np.ndarray, minutes_probs: np.ndarray,
-    positions: pd.Series, cameo: dict[int, float],
+    points_pred: np.ndarray,
+    minutes_probs: np.ndarray,
+    positions: pd.Series,
+    cameo: dict[int, float],
 ) -> np.ndarray:
     cameo_vec = positions.map(lambda p: cameo.get(int(p), 1.0)).to_numpy(dtype=float)
     return minutes_probs[:, 2] * points_pred + minutes_probs[:, 1] * cameo_vec

@@ -8,9 +8,19 @@ availability is applied as a hard gate at inference time instead.
 import pandas as pd
 
 FEATURES = [
-    "was_home_i", "position", "value", "new_season", "started_last",
-    "start_share_5", "start_share_10", "played_share_5",
-    "fdr", "own_attack", "own_overall", "opp_defence", "opp_overall",
+    "was_home_i",
+    "position",
+    "value",
+    "new_season",
+    "started_last",
+    "start_share_5",
+    "start_share_10",
+    "played_share_5",
+    "fdr",
+    "own_attack",
+    "own_overall",
+    "opp_defence",
+    "opp_overall",
 ]
 
 
@@ -18,10 +28,12 @@ def add(df: pd.DataFrame) -> pd.DataFrame:
     g = df.groupby("player_code", sort=False)
     df["was_home_i"] = df["was_home"].astype(float)
     df["position"] = df["position"].astype(int)
-    df["new_season"] = g["season_id"].transform(lambda s: s.ne(s.shift(1))).astype(float)
-    df["started_last"] = (
-        g["minutes"].transform(lambda s: s.shift(1)) >= 60
-    ).astype(float)
+    df["new_season"] = (
+        g["season_id"].transform(lambda s: s.ne(s.shift(1))).astype(float)
+    )
+    df["started_last"] = (g["minutes"].transform(lambda s: s.shift(1)) >= 60).astype(
+        float
+    )
     started = (df["minutes"] >= 60).astype(float).where(df["minutes"].notna())
     played = (df["minutes"] > 0).astype(float).where(df["minutes"].notna())
     df["_started"] = started

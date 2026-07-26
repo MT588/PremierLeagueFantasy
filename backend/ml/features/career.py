@@ -3,9 +3,14 @@
 import pandas as pd
 
 FEATURES = [
-    "prev_season_ppg", "ppg_prev2", "ppg_prev3",
-    "pts_per90_prev1", "minutes_share_prev1", "starts_prev1",
-    "seasons_in_pl", "age_years",
+    "prev_season_ppg",
+    "ppg_prev2",
+    "ppg_prev3",
+    "pts_per90_prev1",
+    "minutes_share_prev1",
+    "starts_prev1",
+    "seasons_in_pl",
+    "age_years",
 ]
 
 MINUTES_FLOOR = 900  # ignore bit-part seasons in multi-season averages
@@ -30,7 +35,10 @@ def add(df: pd.DataFrame, birth_dates: pd.Series | None = None) -> pd.DataFrame:
         return key[col].to_dict()
 
     pts, mins, games, starts = (
-        season_stat("pts"), season_stat("mins"), season_stat("games"), season_stat("starts")
+        season_stat("pts"),
+        season_stat("mins"),
+        season_stat("games"),
+        season_stat("starts"),
     )
 
     def trailing_ppg(code: int, year: int, span: int) -> float | None:

@@ -8,7 +8,7 @@ import pandas as pd
 from sqlalchemy import Engine, text
 
 from pipeline import fpl_api
-from pipeline.ingest_vaastav import DATA_DIR, SEASONS, download_season, records
+from pipeline.ingest_vaastav import SEASONS, download_season, records
 from pipeline.upsert import upsert
 
 log = logging.getLogger(__name__)
@@ -59,7 +59,9 @@ def backfill_setpiece_and_birthdate(engine: Engine) -> None:
         _apply_birthdates(engine, elements, "current")
 
 
-def _apply_setpieces(engine: Engine, raw: pd.DataFrame, season_id: int, label: str) -> None:
+def _apply_setpieces(
+    engine: Engine, raw: pd.DataFrame, season_id: int, label: str
+) -> None:
     cols = {
         "penalties_order": "penalties_order",
         "corners_and_indirect_freekicks_order": "corners_order",
@@ -98,7 +100,9 @@ def _apply_birthdates(engine: Engine, raw: pd.DataFrame, label: str) -> None:
     with engine.begin() as conn:
         for i in range(0, len(rows), 500):
             conn.execute(
-                text("update players set birth_date = :birth_date where code = :player_code"),
+                text(
+                    "update players set birth_date = :birth_date where code = :player_code"
+                ),
                 rows[i : i + 500],
             )
     log.info("birth dates %s: %d players", label, len(rows))

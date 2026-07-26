@@ -111,7 +111,9 @@ def match_epl_players(engine: Engine, epl_pools: dict[int, list[dict]]) -> list[
                 "season_first_seen": str(season),
             }
             if uid in overrides:
-                entry.update(player_code=overrides[uid], match_method="override", confidence=1.0)
+                entry.update(
+                    player_code=overrides[uid], match_method="override", confidence=1.0
+                )
                 results[uid] = entry
                 season_matched_minutes += minutes
                 continue
@@ -123,7 +125,9 @@ def match_epl_players(engine: Engine, epl_pools: dict[int, list[dict]]) -> list[
             } - {None}
             upos = u.get("position")
 
-            cand = by_name.get_group(uname) if uname in by_name.groups else pool.iloc[0:0]
+            cand = (
+                by_name.get_group(uname) if uname in by_name.groups else pool.iloc[0:0]
+            )
             if len(cand):
                 cand = cand.loc[[position_sane(p, upos) for p in cand["position"]]]
             same_team = cand[cand["team_code"].isin(uteams)]
@@ -157,7 +161,9 @@ def match_epl_players(engine: Engine, epl_pools: dict[int, list[dict]]) -> list[
                     if len(scored) > 1 and scored[0][0] - scored[1][0] < 3:
                         log.warning(
                             "ambiguous fuzzy match for %r (%.0f vs %.0f) — skipping",
-                            u["player_name"], scored[0][0], scored[1][0],
+                            u["player_name"],
+                            scored[0][0],
+                            scored[1][0],
                         )
                     else:
                         entry.update(
@@ -183,7 +189,9 @@ def match_epl_players(engine: Engine, epl_pools: dict[int, list[dict]]) -> list[
 
 
 def match_foreign_players(
-    engine: Engine, foreign_pools: dict[tuple[str, int], list[dict]], existing: list[dict]
+    engine: Engine,
+    foreign_pools: dict[tuple[str, int], list[dict]],
+    existing: list[dict],
 ) -> list[dict]:
     """Name-match current-pool FPL players with no EPL Understat history
     against recent foreign-league pools (new signings)."""
@@ -203,7 +211,7 @@ def match_foreign_players(
     pool["norm_web"] = pool["web_name"].map(norm)
 
     candidates: dict[int, dict] = {}
-    for (_, season), players in foreign_pools.items():
+    for players in foreign_pools.values():
         for u in players:
             uid = int(u["id"])
             if uid in known_uids or uid in candidates:
@@ -211,7 +219,8 @@ def match_foreign_players(
             candidates[uid] = u
 
     out = []
-    for uid, u in candidates.items():
+    for u in candidates.values():
+        uid = int(u["id"])
         uname = norm(u["player_name"])
         upos = u.get("position")
         best = None

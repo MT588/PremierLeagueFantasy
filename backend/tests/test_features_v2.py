@@ -10,8 +10,16 @@ from ml.features.base import load_history
 from ml.features.context import load_context
 
 MUTABLE_COLS = [
-    "total_points", "minutes", "goals_scored", "assists", "bonus", "bps",
-    "ict_index", "expected_goals", "expected_assists", "expected_goal_involvements",
+    "total_points",
+    "minutes",
+    "goals_scored",
+    "assists",
+    "bonus",
+    "bps",
+    "ict_index",
+    "expected_goals",
+    "expected_assists",
+    "expected_goal_involvements",
 ]
 
 CUTOFF = pd.Timestamp("2024-01-01", tz="UTC")
@@ -60,7 +68,9 @@ def test_v1_features_reproduce(built):
     v1 = features_v1.build_training_frame(engine)
 
     keys = ["player_code", "season_id", "gameweek", "fpl_fixture_id"]
-    shared = [f for f in features_v1.FEATURES if f in FEATURES and f != "prev_season_ppg"]
+    shared = [
+        f for f in features_v1.FEATURES if f in FEATURES and f != "prev_season_ppg"
+    ]
     merged = v1[keys + shared + ["season_name"]].merge(
         base[keys + shared], on=keys, suffixes=("_v1", "_v2")
     )
@@ -70,7 +80,9 @@ def test_v1_features_reproduce(built):
         a = merged[f + "_v1"].to_numpy(dtype=float)
         b = merged[f + "_v2"].to_numpy(dtype=float)
         both_nan = np.isnan(a) & np.isnan(b)
-        assert (np.isclose(a, b, rtol=1e-6, equal_nan=False) | both_nan).mean() > 0.995, f
+        assert (
+            np.isclose(a, b, rtol=1e-6, equal_nan=False) | both_nan
+        ).mean() > 0.995, f
 
 
 def test_international_load_fires_for_euro_2024(built):

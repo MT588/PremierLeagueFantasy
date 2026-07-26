@@ -6,14 +6,20 @@ import pandas as pd
 from ml.features.context import FeatureContext
 
 FEATURES = [
-    "own_elo", "opp_elo", "elo_diff",
-    "opp_goals_conceded_6", "opp_cs_rate_10",
+    "own_elo",
+    "opp_elo",
+    "elo_diff",
+    "opp_goals_conceded_6",
+    "opp_cs_rate_10",
     "opp_pts_to_pos_6",
-    "vs_opp_ppg", "vs_opp_games",
+    "vs_opp_ppg",
+    "vs_opp_games",
 ]
 
 
-def _asof_elo(df: pd.DataFrame, ctx: FeatureContext, team_col: str, out: str) -> pd.DataFrame:
+def _asof_elo(
+    df: pd.DataFrame, ctx: FeatureContext, team_col: str, out: str
+) -> pd.DataFrame:
     elo = ctx.club_elo.rename(
         columns={"team_code": team_col, "valid_from": "kickoff_time"}
     ).sort_values("kickoff_time")
@@ -35,11 +41,15 @@ def _team_defence(df: pd.DataFrame, ctx: FeatureContext) -> pd.DataFrame:
     tf = ctx.team_fixtures[ctx.team_fixtures["finished"]].copy()
     tf = tf.sort_values(["team_code", "kickoff_time"]).reset_index(drop=True)
     g = tf.groupby("team_code", sort=False)
-    tf["ga_6"] = g["goals_against"].transform(lambda s: s.rolling(6, min_periods=3).mean())
+    tf["ga_6"] = g["goals_against"].transform(
+        lambda s: s.rolling(6, min_periods=3).mean()
+    )
     tf["cs_10"] = g["goals_against"].transform(
         lambda s: s.eq(0).rolling(10, min_periods=5).mean()
     )
-    tf = tf.rename(columns={"team_code": "opponent_team_code"}).sort_values("kickoff_time")
+    tf = tf.rename(columns={"team_code": "opponent_team_code"}).sort_values(
+        "kickoff_time"
+    )
 
     order = df.index
     left = (

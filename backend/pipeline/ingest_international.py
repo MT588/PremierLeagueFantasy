@@ -15,6 +15,7 @@ import json
 import logging
 import os
 import re
+import typing
 import unicodedata
 from pathlib import Path
 
@@ -34,46 +35,99 @@ TOURNAMENTS = {
     ("WC", 2026): {
         "squads_page": "2026 FIFA World Cup squads",
         "progress": {
-            "Spain": 7, "Argentina": 6, "France": 5, "England": 5,
-            "Paraguay": 4, "Morocco": 4, "Belgium": 4, "Norway": 4,
-            "Canada": 3, "Brazil": 3, "United States": 3, "Switzerland": 3,
-            "Colombia": 3, "Egypt": 3, "Sweden": 3, "Austria": 3,
-            "Mexico": 2, "South Africa": 2, "Bosnia and Herzegovina": 2,
-            "Japan": 2, "Germany": 2, "Ivory Coast": 2, "Ecuador": 2,
-            "Netherlands": 2, "Cape Verde": 2, "Senegal": 2, "Algeria": 2,
-            "Portugal": 2, "DR Congo": 2, "Ghana": 2, "Croatia": 2,
+            "Spain": 7,
+            "Argentina": 6,
+            "France": 5,
+            "England": 5,
+            "Paraguay": 4,
+            "Morocco": 4,
+            "Belgium": 4,
+            "Norway": 4,
+            "Canada": 3,
+            "Brazil": 3,
+            "United States": 3,
+            "Switzerland": 3,
+            "Colombia": 3,
+            "Egypt": 3,
+            "Sweden": 3,
+            "Austria": 3,
+            "Mexico": 2,
+            "South Africa": 2,
+            "Bosnia and Herzegovina": 2,
+            "Japan": 2,
+            "Germany": 2,
+            "Ivory Coast": 2,
+            "Ecuador": 2,
+            "Netherlands": 2,
+            "Cape Verde": 2,
+            "Senegal": 2,
+            "Algeria": 2,
+            "Portugal": 2,
+            "DR Congo": 2,
+            "Ghana": 2,
+            "Croatia": 2,
             "Australia": 2,
         },
     },
     ("WC", 2022): {
         "squads_page": "2022 FIFA World Cup squads",
         "progress": {
-            "Argentina": 7, "France": 6, "Croatia": 5, "Morocco": 5,
-            "Netherlands": 4, "Brazil": 4, "England": 4, "Portugal": 4,
-            "United States": 3, "Australia": 3, "Poland": 3, "Senegal": 3,
-            "Japan": 3, "South Korea": 3, "Switzerland": 3, "Spain": 3,
+            "Argentina": 7,
+            "France": 6,
+            "Croatia": 5,
+            "Morocco": 5,
+            "Netherlands": 4,
+            "Brazil": 4,
+            "England": 4,
+            "Portugal": 4,
+            "United States": 3,
+            "Australia": 3,
+            "Poland": 3,
+            "Senegal": 3,
+            "Japan": 3,
+            "South Korea": 3,
+            "Switzerland": 3,
+            "Spain": 3,
         },
     },
     ("EURO", 2024): {
         "squads_page": "UEFA Euro 2024 squads",
         "progress": {
-            "Spain": 7, "England": 6, "France": 5, "Netherlands": 5,
-            "Portugal": 4, "Germany": 4, "Switzerland": 4, "Turkey": 4,
-            "Italy": 3, "Denmark": 3, "Belgium": 3, "Slovakia": 3,
-            "Romania": 3, "Austria": 3, "Slovenia": 3, "Georgia": 3,
+            "Spain": 7,
+            "England": 6,
+            "France": 5,
+            "Netherlands": 5,
+            "Portugal": 4,
+            "Germany": 4,
+            "Switzerland": 4,
+            "Turkey": 4,
+            "Italy": 3,
+            "Denmark": 3,
+            "Belgium": 3,
+            "Slovakia": 3,
+            "Romania": 3,
+            "Austria": 3,
+            "Slovenia": 3,
+            "Georgia": 3,
         },
     },
     ("COPA", 2024): {
         "squads_page": "2024 Copa América squads",
         "progress": {
-            "Argentina": 7, "Colombia": 6, "Uruguay": 5, "Canada": 5,
-            "Brazil": 4, "Venezuela": 4, "Ecuador": 4, "Panama": 4,
+            "Argentina": 7,
+            "Colombia": 6,
+            "Uruguay": 5,
+            "Canada": 5,
+            "Brazil": 4,
+            "Venezuela": 4,
+            "Ecuador": 4,
+            "Panama": 4,
         },
     },
 }
 
 PLAYER_ROW = re.compile(
-    r"\{\{nat fs g player\|.*?name=\[\[([^\]|]+)(?:\|([^\]]+))?\]\]", re.I
+    r"\{\{nat fs g player\|.*?name=\[\[([^\]|]+)(?:\|([^\]]+))?\]\]", re.IGNORECASE
 )
 
 
@@ -86,8 +140,11 @@ def fetch_squads_wikitext(page: str) -> str:
         resp = httpx.get(
             "https://en.wikipedia.org/w/api.php",
             params={
-                "action": "parse", "page": page, "prop": "wikitext",
-                "format": "json", "formatversion": 2,
+                "action": "parse",
+                "page": page,
+                "prop": "wikitext",
+                "format": "json",
+                "formatversion": 2,
             },
             headers={"User-Agent": "PLFantasy/1.0"},
             timeout=60,
@@ -125,7 +182,9 @@ def strip_diacritics(s: str) -> str:
 class WikipediaSquadSource:
     source_name = "wikipedia-proxy"
 
-    def load(self, engine: Engine, tournament: str, year: int, config: dict) -> list[dict]:
+    def load(
+        self, engine: Engine, tournament: str, year: int, config: dict
+    ) -> list[dict]:
         squads = parse_squads(fetch_squads_wikitext(config["squads_page"]))
         progress = config["progress"]
 
@@ -181,7 +240,11 @@ class WikipediaSquadSource:
             )
         log.info(
             "%s %d: %d squad players parsed, %d matched to FPL players (%d ambiguous skipped)",
-            tournament, year, n_squad, len(rows), ambiguous,
+            tournament,
+            year,
+            n_squad,
+            len(rows),
+            ambiguous,
         )
         return rows
 
@@ -191,7 +254,7 @@ class FootballDataOrgSource:
     the API key is configured AND a probe shows lineups in the response."""
 
     source_name = "football-data.org"
-    COMPETITIONS = {"WC": "WC", "EURO": "EC"}
+    COMPETITIONS: typing.ClassVar[dict[str, str]] = {"WC": "WC", "EURO": "EC"}
 
     def __init__(self) -> None:
         self.key = os.environ.get("FOOTBALL_DATA_API_KEY") or ""
@@ -201,14 +264,17 @@ class FootballDataOrgSource:
             return False
         try:
             resp = httpx.get(
-                "https://api.football-data.org/v4/matches/singleprobe", timeout=30,
+                "https://api.football-data.org/v4/matches/singleprobe",
+                timeout=30,
                 headers={"X-Auth-Token": self.key},
             )
         except httpx.HTTPError:
             return False
         return resp.status_code != 403
 
-    def load(self, engine: Engine, tournament: str, year: int, config: dict) -> list[dict]:
+    def load(
+        self, engine: Engine, tournament: str, year: int, config: dict
+    ) -> list[dict]:
         raise NotImplementedError(
             "wire up once the API key exists — see docs/FOOTBALL_DATA_API_SETUP.md"
         )
@@ -220,8 +286,14 @@ def ingest_international(engine: Engine) -> None:
     total = 0
     for (tournament, year), config in TOURNAMENTS.items():
         if fd.key and fd.available(tournament):
-            log.info("%s %d: football-data.org key present — exact-minutes path "
-                     "not yet wired, using Wikipedia proxy (see setup doc)", tournament, year)
+            log.info(
+                "%s %d: football-data.org key present — exact-minutes path "
+                "not yet wired, using Wikipedia proxy (see setup doc)",
+                tournament,
+                year,
+            )
         rows = wiki.load(engine, tournament, year, config)
-        total += upsert(engine, "international_load", rows, ["player_code", "tournament", "year"])
+        total += upsert(
+            engine, "international_load", rows, ["player_code", "tournament", "year"]
+        )
     log.info("international_load: %d rows", total)

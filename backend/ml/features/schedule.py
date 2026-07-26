@@ -7,9 +7,13 @@ import pandas as pd
 from ml.features.context import FeatureContext
 
 FEATURES = [
-    "days_since_club_match", "club_matches_14d", "club_matches_30d",
-    "euro_comp", "gw_number",
-    "intl_minutes_decayed", "intl_deep_run_decayed",
+    "days_since_club_match",
+    "club_matches_14d",
+    "club_matches_30d",
+    "euro_comp",
+    "gw_number",
+    "intl_minutes_decayed",
+    "intl_deep_run_decayed",
 ]
 
 DECAY_GWS = 8
@@ -49,8 +53,8 @@ def _intl_load(df: pd.DataFrame, ctx: FeatureContext) -> pd.DataFrame:
         m if pd.notna(m) else PROGRESS_MINUTES.get(int(p) if pd.notna(p) else 1, 180)
         for m, p in zip(intl["minutes"], intl["team_progress"])
     ]
-    summer = {}   # (player_code, season_start_year) -> (minutes_eff, progress)
-    winter = {}   # WC2022: mid-season, decays from GW17 of 2022-23
+    summer = {}  # (player_code, season_start_year) -> (minutes_eff, progress)
+    winter = {}  # WC2022: mid-season, decays from GW17 of 2022-23
     for r in intl.itertuples():
         if r.tournament == "WC" and r.year == 2022:
             winter[(r.player_code, 2022)] = (r.minutes_eff, r.team_progress or 1)

@@ -25,7 +25,9 @@ def meta() -> Meta:
             {"s": season_id},
         ).scalar()
         preds = conn.execute(
-            text("select count(*) from predictions where season_id = :s and model_version = :m"),
+            text(
+                "select count(*) from predictions where season_id = :s and model_version = :m"
+            ),
             {"s": season_id, "m": MODEL_VERSION},
         ).scalar()
     return Meta(

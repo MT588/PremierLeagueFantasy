@@ -7,9 +7,19 @@ ROLL_WINDOWS = (3, 5, 10)
 FEATURES = [
     *[f"points_avg_{w}" for w in ROLL_WINDOWS],
     *[f"minutes_avg_{w}" for w in ROLL_WINDOWS],
-    "goals_sum_5", "assists_sum_5", "bonus_avg_5", "bps_avg_5", "ict_avg_5",
-    "xg90_5", "xa90_5", "xgi90_5", "xgi90_10",
-    "points_ewma_hl3", "points_ewma_hl8", "xgi90_ewma_hl5", "minutes_ewma_hl3",
+    "goals_sum_5",
+    "assists_sum_5",
+    "bonus_avg_5",
+    "bps_avg_5",
+    "ict_avg_5",
+    "xg90_5",
+    "xa90_5",
+    "xgi90_5",
+    "xgi90_10",
+    "points_ewma_hl3",
+    "points_ewma_hl8",
+    "xgi90_ewma_hl5",
+    "minutes_ewma_hl3",
     "season_ppg",
 ]
 
@@ -30,14 +40,20 @@ def add(df: pd.DataFrame) -> pd.DataFrame:
     df["assists_sum_5"] = g["assists"].transform(
         lambda s: s.shift(1).rolling(5, min_periods=1).sum()
     )
-    df["bonus_avg_5"] = g["bonus"].transform(lambda s: s.shift(1).rolling(5, min_periods=1).mean())
-    df["bps_avg_5"] = g["bps"].transform(lambda s: s.shift(1).rolling(5, min_periods=1).mean())
+    df["bonus_avg_5"] = g["bonus"].transform(
+        lambda s: s.shift(1).rolling(5, min_periods=1).mean()
+    )
+    df["bps_avg_5"] = g["bps"].transform(
+        lambda s: s.shift(1).rolling(5, min_periods=1).mean()
+    )
     df["ict_avg_5"] = g["ict_index"].transform(
         lambda s: s.shift(1).rolling(5, min_periods=1).mean()
     )
 
     for w in (5, 10):
-        min_sum = g["minutes"].transform(lambda s, w=w: s.shift(1).rolling(w, min_periods=1).sum())
+        min_sum = g["minutes"].transform(
+            lambda s, w=w: s.shift(1).rolling(w, min_periods=1).sum()
+        )
         for out, col in (
             (f"xg90_{w}", "expected_goals"),
             (f"xa90_{w}", "expected_assists"),

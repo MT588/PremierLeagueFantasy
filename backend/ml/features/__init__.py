@@ -35,7 +35,16 @@ FEATURES_BY_GROUP: dict[str, list[str]] = {
     "meta": meta.FEATURES,
 }
 
-FEATURES: list[str] = [f for group in FEATURES_BY_GROUP.values() for f in group]
+# Shipped feature set, selected by ablation on the 2025-26 fold (see
+# ml/artifacts/ablation_v2.md): understat is the largest single win
+# (-0.011 MAE), career helps rank correlation, setpiece is a small free win.
+# opponent/market/schedule/manager added MAE noise and diluted rank quality
+# for the POINTS model, so they are excluded here — but every group is still
+# computed on the frame: the minutes model uses schedule+manager+meta, and
+# ablation/re-selection can re-enable groups without code changes.
+SELECTED_GROUPS: list[str] = ["form", "meta", "career", "understat", "setpiece"]
+
+FEATURES: list[str] = [f for g in SELECTED_GROUPS for f in FEATURES_BY_GROUP[g]]
 
 TARGET = "total_points"
 
@@ -150,7 +159,9 @@ def build_training_frame(engine: Engine) -> pd.DataFrame:
     return add_all_features(df, ctx, _load_birth_dates(engine))
 
 
-def build_inference_frame(engine: Engine, season_id: int, gameweeks: list[int]) -> pd.DataFrame:
+def build_inference_frame(
+    engine: Engine, season_id: int, gameweeks: list[int]
+) -> pd.DataFrame:
     ctx = context.load_context(engine)
     history = load_history(engine)
     stubs = build_stubs(engine, season_id, gameweeks)

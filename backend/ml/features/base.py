@@ -48,7 +48,9 @@ where ps.season_id = :season_id and ps.position between 1 and 4
 def load_history(engine: Engine) -> pd.DataFrame:
     with engine.connect() as conn:
         df = pd.read_sql(text(HISTORY_SQL), conn)
-    df["kickoff_time"] = pd.to_datetime(df["kickoff_time"], utc=True).astype("datetime64[ns, UTC]")
+    df["kickoff_time"] = pd.to_datetime(df["kickoff_time"], utc=True).astype(
+        "datetime64[ns, UTC]"
+    )
     df["is_inference"] = False
     return df
 
@@ -66,7 +68,9 @@ def build_stubs(engine: Engine, season_id: int, gameweeks: list[int]) -> pd.Data
             conn,
             params={"season_id": season_id, "gameweeks": gameweeks},
         )
-        pool = pd.read_sql(text(CURRENT_POOL_SQL), conn, params={"season_id": season_id})
+        pool = pd.read_sql(
+            text(CURRENT_POOL_SQL), conn, params={"season_id": season_id}
+        )
         start_year = conn.execute(
             text("select start_year from seasons where id = :sid"), {"sid": season_id}
         ).scalar_one()
@@ -86,8 +90,15 @@ def build_stubs(engine: Engine, season_id: int, gameweeks: list[int]) -> pd.Data
         columns={"away_team_code": "team_code", "home_team_code": "opponent_team_code"}
     ).assign(was_home=False, fdr=fixtures["away_difficulty"])
     team_fixtures = pd.concat([home, away], ignore_index=True)[
-        ["gameweek", "fpl_fixture_id", "kickoff_time", "team_code",
-         "opponent_team_code", "was_home", "fdr"]
+        [
+            "gameweek",
+            "fpl_fixture_id",
+            "kickoff_time",
+            "team_code",
+            "opponent_team_code",
+            "was_home",
+            "fdr",
+        ]
     ]
 
     stubs = pool.merge(team_fixtures, on="team_code", how="inner")
@@ -95,7 +106,9 @@ def build_stubs(engine: Engine, season_id: int, gameweeks: list[int]) -> pd.Data
     stubs["season_name"] = season_name
     stubs["start_year"] = start_year
     stubs["value"] = stubs["now_cost"]
-    stubs["kickoff_time"] = pd.to_datetime(stubs["kickoff_time"], utc=True).astype("datetime64[ns, UTC]")
+    stubs["kickoff_time"] = pd.to_datetime(stubs["kickoff_time"], utc=True).astype(
+        "datetime64[ns, UTC]"
+    )
 
     own = strengths.set_index("team_code")
     stubs["own_attack"] = [

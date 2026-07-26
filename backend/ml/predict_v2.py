@@ -21,7 +21,9 @@ RATING_BUCKETS = [(0.90, "excellent"), (0.65, "good"), (0.35, "average"), (0.0, 
 
 def current_season_and_next_gws(horizon: int) -> tuple[int, list[int]]:
     with engine.connect() as conn:
-        season_id = conn.execute(text("select id from seasons where is_current")).scalar_one()
+        season_id = conn.execute(
+            text("select id from seasons where is_current")
+        ).scalar_one()
         gws = (
             conn.execute(
                 text(
@@ -59,8 +61,12 @@ def run(horizon: int = 5) -> int:
     frame = coerce_features(build_inference_frame(engine, season_id, gws))
     frame = frame.reset_index(drop=True)
 
-    mmodel = lgb.Booster(model_file=str(ARTIFACTS / f"model_minutes_{MODEL_VERSION}.txt"))
-    pmodel = lgb.Booster(model_file=str(ARTIFACTS / f"model_points_{MODEL_VERSION}.txt"))
+    mmodel = lgb.Booster(
+        model_file=str(ARTIFACTS / f"model_minutes_{MODEL_VERSION}.txt")
+    )
+    pmodel = lgb.Booster(
+        model_file=str(ARTIFACTS / f"model_points_{MODEL_VERSION}.txt")
+    )
     cameo = points_model.load_cameo(ARTIFACTS / f"cameo_means_{MODEL_VERSION}.json")
 
     mprobs = predict_proba(mmodel, frame)
@@ -97,7 +103,8 @@ def run(horizon: int = 5) -> int:
             "player_code": int(r.player_code),
             "gameweek": int(r.gameweek),
             "predicted_points": round(float(r.predicted_points), 3),
-            "predicted_minutes": None if pd.isna(r.predicted_minutes)
+            "predicted_minutes": None
+            if pd.isna(r.predicted_minutes)
             else round(float(r.predicted_minutes), 1),
             "p_start": round(float(r.p_start), 3),
             "p_cameo": round(float(r.p_cameo), 3),
@@ -107,14 +114,20 @@ def run(horizon: int = 5) -> int:
         }
         for r in agg.itertuples()
     ]
-    n = upsert(engine, "predictions", rows,
-               ["season_id", "player_code", "gameweek", "model_version"])
+    n = upsert(
+        engine,
+        "predictions",
+        rows,
+        ["season_id", "player_code", "gameweek", "model_version"],
+    )
     log.info("wrote %d predictions", n)
     return n
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
+    )
     parser = argparse.ArgumentParser()
     parser.add_argument("--horizon", type=int, default=5)
     args = parser.parse_args()

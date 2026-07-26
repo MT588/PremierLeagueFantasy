@@ -12,11 +12,18 @@ from ml.features import FEATURES_BY_GROUP
 
 MINUTES_FEATURES = [
     *FEATURES_BY_GROUP["meta"],
-    "minutes_avg_3", "minutes_avg_5", "minutes_avg_10", "minutes_ewma_hl3",
-    "points_avg_5", "season_ppg",
+    "minutes_avg_3",
+    "minutes_avg_5",
+    "minutes_avg_10",
+    "minutes_ewma_hl3",
+    "points_avg_5",
+    "season_ppg",
     *FEATURES_BY_GROUP["schedule"],
     *FEATURES_BY_GROUP["manager"],
-    "minutes_share_prev1", "starts_prev1", "seasons_in_pl", "age_years",
+    "minutes_share_prev1",
+    "starts_prev1",
+    "seasons_in_pl",
+    "age_years",
 ]
 
 PARAMS = {
@@ -40,14 +47,18 @@ def minutes_class(minutes: pd.Series) -> np.ndarray:
 
 def train(fit: pd.DataFrame, valid: pd.DataFrame) -> lgb.Booster:
     dtrain = lgb.Dataset(
-        fit[MINUTES_FEATURES], label=minutes_class(fit["minutes"]),
+        fit[MINUTES_FEATURES],
+        label=minutes_class(fit["minutes"]),
         categorical_feature=["position"],
     )
     dvalid = lgb.Dataset(
         valid[MINUTES_FEATURES], label=minutes_class(valid["minutes"]), reference=dtrain
     )
     model = lgb.train(
-        PARAMS, dtrain, num_boost_round=1500, valid_sets=[dvalid],
+        PARAMS,
+        dtrain,
+        num_boost_round=1500,
+        valid_sets=[dvalid],
         callbacks=[lgb.early_stopping(100, verbose=False)],
     )
     return model
@@ -55,14 +66,17 @@ def train(fit: pd.DataFrame, valid: pd.DataFrame) -> lgb.Booster:
 
 def refit(full: pd.DataFrame, best_iteration: int) -> lgb.Booster:
     dtrain = lgb.Dataset(
-        full[MINUTES_FEATURES], label=minutes_class(full["minutes"]),
+        full[MINUTES_FEATURES],
+        label=minutes_class(full["minutes"]),
         categorical_feature=["position"],
     )
     return lgb.train(PARAMS, dtrain, num_boost_round=max(best_iteration, 10))
 
 
 def predict_proba(model: lgb.Booster, df: pd.DataFrame) -> np.ndarray:
-    return model.predict(df[MINUTES_FEATURES], num_iteration=model.best_iteration or None)
+    return model.predict(
+        df[MINUTES_FEATURES], num_iteration=model.best_iteration or None
+    )
 
 
 def played_last_heuristic(fit: pd.DataFrame, test: pd.DataFrame) -> np.ndarray:

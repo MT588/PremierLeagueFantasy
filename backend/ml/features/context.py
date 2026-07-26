@@ -11,7 +11,9 @@ from sqlalchemy import Engine, text
 
 log = logging.getLogger(__name__)
 
-CLUBELO_CACHE = Path(__file__).resolve().parent.parent.parent / "data" / "raw" / "clubelo"
+CLUBELO_CACHE = (
+    Path(__file__).resolve().parent.parent.parent / "data" / "raw" / "clubelo"
+)
 
 UNDERSTAT_SQL = """
 select up.player_code, um.match_date, um.league, um.season, um.minutes,
@@ -22,20 +24,24 @@ where up.player_code is not null
 """
 
 LEAGUE_COUNTRY = {
-    "EPL": "ENG", "La_liga": "ESP", "Bundesliga": "GER",
-    "Serie_A": "ITA", "Ligue_1": "FRA", "RFPL": "RUS",
+    "EPL": "ENG",
+    "La_liga": "ESP",
+    "Bundesliga": "GER",
+    "Serie_A": "ITA",
+    "Ligue_1": "FRA",
+    "RFPL": "RUS",
 }
 
 
 @dataclass
 class FeatureContext:
-    club_elo: pd.DataFrame          # team_code, valid_from(date as ts), elo
-    manager_stints: pd.DataFrame    # team_code, start_date(ts)
+    club_elo: pd.DataFrame  # team_code, valid_from(date as ts), elo
+    manager_stints: pd.DataFrame  # team_code, start_date(ts)
     euro: dict[tuple[int, int], int]  # (season_id, team_code) -> 0/1/2
-    intl: pd.DataFrame              # player_code, tournament, year, minutes, team_progress
-    setpiece: pd.DataFrame          # season_id, player_code, pen/corner/fk orders
-    team_fixtures: pd.DataFrame     # team_code, kickoff_time, goals_for, goals_against
-    understat: pd.DataFrame         # per player per match
+    intl: pd.DataFrame  # player_code, tournament, year, minutes, team_progress
+    setpiece: pd.DataFrame  # season_id, player_code, pen/corner/fk orders
+    team_fixtures: pd.DataFrame  # team_code, kickoff_time, goals_for, goals_against
+    understat: pd.DataFrame  # per player per match
     league_coefs: dict[tuple[str, int], float]
 
 
@@ -105,10 +111,14 @@ def load_context(engine: Engine) -> FeatureContext:
         )
         understat = pd.read_sql(text(UNDERSTAT_SQL), conn)
 
-    club_elo["valid_from"] = pd.to_datetime(club_elo["valid_from"], utc=True).astype("datetime64[ns, UTC]")
+    club_elo["valid_from"] = pd.to_datetime(club_elo["valid_from"], utc=True).astype(
+        "datetime64[ns, UTC]"
+    )
     club_elo = club_elo.sort_values("valid_from")
 
-    stints["start_date"] = pd.to_datetime(stints["start_date"], utc=True).astype("datetime64[ns, UTC]")
+    stints["start_date"] = pd.to_datetime(stints["start_date"], utc=True).astype(
+        "datetime64[ns, UTC]"
+    )
     stints = stints.sort_values("start_date")
 
     euro = {
@@ -116,14 +126,22 @@ def load_context(engine: Engine) -> FeatureContext:
         for r in euro_rows
     }
 
-    fixtures["kickoff_time"] = pd.to_datetime(fixtures["kickoff_time"], utc=True).astype("datetime64[ns, UTC]")
+    fixtures["kickoff_time"] = pd.to_datetime(
+        fixtures["kickoff_time"], utc=True
+    ).astype("datetime64[ns, UTC]")
     home = fixtures.rename(
-        columns={"home_team_code": "team_code", "home_score": "goals_for",
-                 "away_score": "goals_against"}
+        columns={
+            "home_team_code": "team_code",
+            "home_score": "goals_for",
+            "away_score": "goals_against",
+        }
     )[["team_code", "kickoff_time", "goals_for", "goals_against", "finished"]]
     away = fixtures.rename(
-        columns={"away_team_code": "team_code", "away_score": "goals_for",
-                 "home_score": "goals_against"}
+        columns={
+            "away_team_code": "team_code",
+            "away_score": "goals_for",
+            "home_score": "goals_against",
+        }
     )[["team_code", "kickoff_time", "goals_for", "goals_against", "finished"]]
     team_fixtures = (
         pd.concat([home, away], ignore_index=True)
@@ -131,7 +149,9 @@ def load_context(engine: Engine) -> FeatureContext:
         .reset_index(drop=True)
     )
 
-    understat["match_date"] = pd.to_datetime(understat["match_date"], utc=True).astype("datetime64[ns, UTC]")
+    understat["match_date"] = pd.to_datetime(understat["match_date"], utc=True).astype(
+        "datetime64[ns, UTC]"
+    )
     understat = understat.sort_values("match_date")
 
     return FeatureContext(

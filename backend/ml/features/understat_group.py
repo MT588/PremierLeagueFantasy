@@ -6,8 +6,14 @@ import pandas as pd
 from ml.features.context import FeatureContext
 
 FEATURES = [
-    "ust_npxg90_5", "ust_xa90_5", "ust_shots90_5", "ust_kp90_5", "ust_npxg90_20",
-    "ust_career_npxg90_adj", "ust_career_xa90_adj", "ust_career_minutes_adj",
+    "ust_npxg90_5",
+    "ust_xa90_5",
+    "ust_shots90_5",
+    "ust_kp90_5",
+    "ust_npxg90_20",
+    "ust_career_npxg90_adj",
+    "ust_career_xa90_adj",
+    "ust_career_minutes_adj",
     "ust_prev_league_coef",
 ]
 
@@ -46,13 +52,19 @@ def _rolling_rates(ust: pd.DataFrame) -> pd.DataFrame:
         mins = g["minutes"].transform(lambda s, w=w: s.rolling(w, min_periods=1).sum())
         out[f"npxg90_{w}"] = (
             g["npxg"].transform(lambda s, w=w: s.rolling(w, min_periods=1).sum())
-            / mins.clip(lower=1) * 90
+            / mins.clip(lower=1)
+            * 90
         )
         if w == 5:
-            for col, name in (("xa", "xa90_5"), ("shots", "shots90_5"), ("key_passes", "kp90_5")):
+            for col, name in (
+                ("xa", "xa90_5"),
+                ("shots", "shots90_5"),
+                ("key_passes", "kp90_5"),
+            ):
                 out[name] = (
                     g[col].transform(lambda s: s.rolling(5, min_periods=1).sum())
-                    / mins.clip(lower=1) * 90
+                    / mins.clip(lower=1)
+                    * 90
                 )
     return out
 
@@ -78,8 +90,10 @@ def add(df: pd.DataFrame, ctx: FeatureContext) -> pd.DataFrame:
         allow_exact_matches=False,
     ).set_index("index")
     for src, dst in (
-        ("npxg90_5", "ust_npxg90_5"), ("xa90_5", "ust_xa90_5"),
-        ("shots90_5", "ust_shots90_5"), ("kp90_5", "ust_kp90_5"),
+        ("npxg90_5", "ust_npxg90_5"),
+        ("xa90_5", "ust_xa90_5"),
+        ("shots90_5", "ust_shots90_5"),
+        ("kp90_5", "ust_kp90_5"),
         ("npxg90_20", "ust_npxg90_20"),
     ):
         df[dst] = merged[src].reindex(order)
@@ -94,8 +108,10 @@ def add(df: pd.DataFrame, ctx: FeatureContext) -> pd.DataFrame:
     per_season = (
         ust2.groupby(["player_code", "season"])
         .agg(
-            npxg_adj=("npxg", "sum"), xa_adj=("xa", "sum"),
-            mins=("minutes", "sum"), coef=("coef", "mean"),
+            npxg_adj=("npxg", "sum"),
+            xa_adj=("xa", "sum"),
+            mins=("minutes", "sum"),
+            coef=("coef", "mean"),
         )
         .reset_index()
     )
