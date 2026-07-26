@@ -1,11 +1,14 @@
-"""CLI orchestrator: python -m pipeline.run_pipeline --historical | --live | --all"""
+"""CLI orchestrator: python -m pipeline.run_pipeline [--init] --historical | --live | --all"""
 
 import argparse
 import logging
+from pathlib import Path
 
 from sqlalchemy import text
 
 from app.db import engine
+
+MIGRATIONS_DIR = Path(__file__).resolve().parent.parent.parent / "supabase" / "migrations"
 
 TABLES = [
     "seasons",
@@ -17,6 +20,15 @@ TABLES = [
     "player_gameweeks",
     "predictions",
 ]
+
+
+def apply_migrations() -> None:
+    """Apply supabase/migrations/*.sql in order. All statements are idempotent
+    (create table if not exists / enable RLS), so re-running is safe."""
+    for path in sorted(MIGRATIONS_DIR.glob("*.sql")):
+        print(f"applying {path.name}")
+        with engine.begin() as conn:
+            conn.exec_driver_sql(path.read_text())
 
 
 def print_counts() -> None:
@@ -33,6 +45,9 @@ def main() -> None:
     )
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "--init", action="store_true", help="apply schema migrations first"
+    )
+    parser.add_argument(
         "--historical", action="store_true", help="ingest vaastav CSV seasons"
     )
     parser.add_argument(
@@ -42,6 +57,8 @@ def main() -> None:
     parser.add_argument("--seasons", nargs="*", help="subset of seasons, e.g. 2024-25")
     args = parser.parse_args()
 
+    if args.init:
+        apply_migrations()
     if args.historical or args.all:
         from pipeline.ingest_vaastav import ingest_all
 

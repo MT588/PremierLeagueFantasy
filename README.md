@@ -57,6 +57,31 @@ npm install
 npm run dev                                        # http://localhost:3000
 ```
 
+## Loading into Supabase
+
+Free-tier Supabase projects pause after inactivity — everything here rebuilds
+from public sources, so nothing is lost. When the project is active again:
+
+1. **Restore/unpause** the project in the Supabase dashboard (or create a new
+   one — no existing schema is required).
+2. Copy the **connection string** from *Project Settings → Database* (either
+   the direct connection or the session pooler; the `postgres://...` string
+   can be pasted as-is).
+3. Point the backend at it and load everything with one command:
+
+```bash
+cd backend
+echo 'DATABASE_URL=postgres://postgres.<ref>:<password>@<host>:5432/postgres' > .env
+uv run python -m pipeline.run_pipeline --init --all   # schema + 5 seasons + live sync (~5 min)
+uv run python -m ml.train                             # retrain (~1 min)
+uv run python -m ml.predict --horizon 5               # write predictions
+```
+
+`--init` applies `supabase/migrations/*.sql` and is safe to re-run; the whole
+pipeline is idempotent, so re-running after a pause just tops up whatever is
+missing. RLS is enabled with no anon policies — only the backend (which
+connects with database credentials) can read the tables.
+
 ## Weekly refresh during the season
 
 ```bash
