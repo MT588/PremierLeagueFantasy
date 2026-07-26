@@ -4,6 +4,7 @@ from sqlalchemy import text
 from app import queries
 from app.db import engine
 from app.deps import current_season, next_gameweek
+from ml.train_v2 import MODEL_VERSION
 from app.schemas import (
     FixtureOut,
     GameweekPoint,
@@ -39,7 +40,8 @@ def list_players(
     with engine.connect() as conn:
         rows = (
             conn.execute(
-                text(queries.PLAYERS_LIST), {"season_id": season_id, "gameweek": gw}
+                text(queries.PLAYERS_LIST),
+                {"season_id": season_id, "gameweek": gw, "model_version": MODEL_VERSION},
             )
             .mappings()
             .all()
@@ -73,7 +75,7 @@ def player_detail(code: int) -> PlayerDetail:
                 text(
                     "select p.code, p.web_name, p.first_name || ' ' || p.second_name as full_name, "
                     "ps.position, ps.team_code, t.short_name as team_short, "
-                    "ps.now_cost / 10.0 as price, ps.status "
+                    "ps.now_cost / 10.0 as price, ps.status, ps.chance_of_playing "
                     "from players p "
                     "left join player_seasons ps on ps.player_code = p.code and ps.season_id = :sid "
                     "left join teams t on t.code = ps.team_code "
@@ -101,7 +103,8 @@ def player_detail(code: int) -> PlayerDetail:
         )
         preds = (
             conn.execute(
-                text(queries.PLAYER_PREDICTIONS), {"season_id": season_id, "code": code}
+                text(queries.PLAYER_PREDICTIONS),
+                {"season_id": season_id, "code": code, "model_version": MODEL_VERSION},
             )
             .mappings()
             .all()
@@ -115,6 +118,7 @@ def player_detail(code: int) -> PlayerDetail:
         team_short=base["team_short"],
         price=float(base["price"] or 0),
         status=base["status"],
+        chance_of_playing=base["chance_of_playing"],
         history=[GameweekPoint(**h) for h in history],
         upcoming=[
             FixtureOut(

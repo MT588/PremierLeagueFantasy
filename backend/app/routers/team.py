@@ -5,6 +5,7 @@ from app import queries
 from app.db import engine
 from app.deps import current_season, next_gameweek
 from app.schemas import OptimalTeamOut, SquadPlayer
+from ml.train_v2 import MODEL_VERSION
 from optimizer.ilp import Candidate, optimize
 
 router = APIRouter(tags=["team"])
@@ -25,7 +26,7 @@ def optimal_team(
         rows = (
             conn.execute(
                 text(queries.OPTIMIZER_CANDIDATES),
-                {"season_id": season_id, "gameweeks": gameweeks},
+                {"season_id": season_id, "gameweeks": gameweeks, "model_version": MODEL_VERSION},
             )
             .mappings()
             .all()

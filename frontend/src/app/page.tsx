@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { api, PlayerRow } from "@/lib/api";
 import { fmtPrice, POSITIONS } from "@/lib/ui";
-import { Card, RatingBadge } from "@/components/ui";
+import { Card, RatingBadge, StatusBadge } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +43,7 @@ export default async function Dashboard() {
   const top10 = players.slice(0, 10);
   const byPosition = ([2, 3, 4, 1] as const).map((pos) => ({
     pos,
-    rows: players.filter((p) => p.position === pos).slice(0, 5),
+    rows: players.filter((p) => p.position === pos).slice(0, 10),
   }));
 
   return (
@@ -83,6 +83,9 @@ export default async function Dashboard() {
                   <Link href={`/players/${p.code}`} className="truncate hover:text-accent">
                     {p.web_name}
                     <span className="ml-1.5 text-xs text-ink-3">{p.team_short}</span>
+                    <span className="ml-1.5 align-middle">
+                      <StatusBadge status={p.status} chance={p.chance_of_playing} />
+                    </span>
                   </Link>
                   <span className="flex shrink-0 items-center gap-2">
                     <span className="text-xs text-ink-3">{fmtPrice(p.price)}</span>

@@ -26,6 +26,7 @@ join player_seasons ps on ps.season_id = g.season_id and ps.player_code = g.play
 left join fixtures f on f.season_id = g.season_id and f.fpl_fixture_id = g.fpl_fixture_id
 left join team_seasons own on own.season_id = g.season_id and own.team_code = ps.team_code
 left join team_seasons opp on opp.season_id = g.season_id and opp.team_code = g.opponent_team_code
+where ps.position between 1 and 4  -- excludes FPL's 2024-25 'assistant manager' elements
 """
 
 INFERENCE_FIXTURES_SQL = """
@@ -40,7 +41,7 @@ select ps.player_code, ps.position, ps.team_code, ps.now_cost, ps.status,
        ps.chance_of_playing, ps.fpl_element_id, p.web_name
 from player_seasons ps
 join players p on p.code = ps.player_code
-where ps.season_id = :season_id
+where ps.season_id = :season_id and ps.position between 1 and 4
 """
 
 

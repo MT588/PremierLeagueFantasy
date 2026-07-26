@@ -3,6 +3,7 @@ from sqlalchemy import text
 
 from app.db import engine
 from app.deps import current_season, next_gameweek
+from ml.train_v2 import MODEL_VERSION
 
 router = APIRouter(tags=["predictions"])
 
@@ -18,14 +19,14 @@ def list_predictions(
     sql = """
         select pr.player_code as code, p.web_name, ps.position,
                t.short_name as team_short, ps.now_cost / 10.0 as price,
-               pr.gameweek, pr.predicted_points, pr.rating
+               pr.gameweek, pr.predicted_points, pr.rating, pr.p_start
         from predictions pr
         join players p on p.code = pr.player_code
         join player_seasons ps on ps.season_id = pr.season_id and ps.player_code = pr.player_code
         left join teams t on t.code = ps.team_code
-        where pr.season_id = :sid and pr.gameweek = :gw
+        where pr.season_id = :sid and pr.gameweek = :gw and pr.model_version = :mv
     """
-    params: dict = {"sid": season_id, "gw": gw}
+    params: dict = {"sid": season_id, "gw": gw, "mv": MODEL_VERSION}
     if position:
         sql += " and ps.position = :pos"
         params["pos"] = position

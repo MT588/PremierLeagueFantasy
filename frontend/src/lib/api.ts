@@ -17,8 +17,10 @@ export interface PlayerRow {
   team_short: string | null;
   price: number;
   status: string | null;
+  chance_of_playing: number | null;
   predicted_points: number | null;
   rating: string | null;
+  p_start: number | null;
   form: number | null;
   xgi90: number | null;
   total_points_last_season: number | null;
@@ -42,6 +44,29 @@ export interface GameweekPoint {
   value: number | null;
 }
 
+export interface PredictionDriver {
+  feature: string;
+  label: string;
+  value: number | null;
+  contribution: number;
+}
+
+export interface PredictionDrivers {
+  p_start: number;
+  p_cameo: number;
+  expected_if_start: number;
+  gated?: boolean;
+  top: PredictionDriver[];
+}
+
+export interface PlayerPrediction {
+  gameweek: number;
+  predicted_points: number;
+  rating: string | null;
+  p_start: number | null;
+  drivers: PredictionDrivers | null;
+}
+
 export interface PlayerDetail {
   code: number;
   web_name: string;
@@ -50,9 +75,10 @@ export interface PlayerDetail {
   team_short: string | null;
   price: number;
   status: string | null;
+  chance_of_playing: number | null;
   history: GameweekPoint[];
   upcoming: FixtureOut[];
-  predictions: { gameweek: number; predicted_points: number; rating: string | null }[];
+  predictions: PlayerPrediction[];
 }
 
 export interface SquadPlayer {

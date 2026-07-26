@@ -24,8 +24,10 @@ class PlayerRow(BaseModel):
     team_short: str | None
     price: float
     status: str | None
+    chance_of_playing: int | None
     predicted_points: float | None
     rating: str | None
+    p_start: float | None
     form: float | None  # avg points, last 5 appearances
     xgi90: float | None
     total_points_last_season: int | None
@@ -53,6 +55,8 @@ class PredictionOut(BaseModel):
     gameweek: int
     predicted_points: float
     rating: str | None
+    p_start: float | None = None
+    drivers: dict | None = None
 
 
 class PlayerDetail(BaseModel):
@@ -63,6 +67,7 @@ class PlayerDetail(BaseModel):
     team_short: str | None
     price: float
     status: str | None
+    chance_of_playing: int | None
     history: list[GameweekPoint]
     upcoming: list[FixtureOut]
     predictions: list[PredictionOut]

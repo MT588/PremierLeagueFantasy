@@ -1,8 +1,63 @@
 import { notFound } from "next/navigation";
-import { api } from "@/lib/api";
+import { api, PredictionDrivers } from "@/lib/api";
 import { fmtPrice, POSITIONS } from "@/lib/ui";
-import { Card, FdrChip, RatingBadge } from "@/components/ui";
+import { Card, FdrChip, RatingBadge, StatusBadge } from "@/components/ui";
 import PointsChart from "@/components/PointsChart";
+
+function DriversPanel({ drivers }: { drivers: PredictionDrivers }) {
+  const maxAbs = Math.max(...drivers.top.map((d) => Math.abs(d.contribution)), 0.01);
+  return (
+    <Card title="What drives this prediction">
+      {drivers.gated && (
+        <p className="mb-3 rounded-md bg-[#d03b3b]/15 px-3 py-2 text-xs text-[#ef8f8f]">
+          Currently unavailable — prediction set to zero regardless of the inputs below.
+        </p>
+      )}
+      <div className="mb-3 flex gap-4 text-xs text-ink-2">
+        <span>
+          Start chance:{" "}
+          <span className="font-semibold tabular-nums text-ink">
+            {Math.round(drivers.p_start * 100)}%
+          </span>
+        </span>
+        <span>
+          If starting:{" "}
+          <span className="font-semibold tabular-nums text-ink">
+            {drivers.expected_if_start.toFixed(1)} pts
+          </span>
+        </span>
+      </div>
+      <ul className="space-y-2">
+        {drivers.top.map((d) => {
+          const up = d.contribution > 0;
+          const width = (Math.abs(d.contribution) / maxAbs) * 100;
+          return (
+            <li key={d.feature} className="text-xs">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="truncate text-ink-2">{d.label}</span>
+                <span
+                  className={`shrink-0 tabular-nums ${up ? "text-[#7ee27e]" : "text-[#ef8f8f]"}`}
+                >
+                  {up ? "+" : ""}
+                  {d.contribution.toFixed(2)}
+                </span>
+              </div>
+              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-page">
+                <div
+                  className={`h-full rounded-full ${up ? "bg-[#0ca30c]" : "bg-[#d03b3b]"}`}
+                  style={{ width: `${width}%` }}
+                />
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-3 text-[11px] text-ink-3">
+        Contribution of each input to the points-if-starting estimate (model SHAP values).
+      </p>
+    </Card>
+  );
+}
 
 export const dynamic = "force-dynamic";
 
@@ -36,11 +91,9 @@ export default async function PlayerPage({
           <p className="mt-1 text-sm text-ink-2">
             {POSITIONS[player.position] ?? "—"} · {player.team_short ?? "not in current pool"} ·{" "}
             {fmtPrice(player.price)}
-            {player.status && player.status !== "a" && (
-              <span className="ml-2 rounded-md bg-[#d03b3b]/20 px-2 py-0.5 text-xs text-[#ef8f8f]">
-                flagged: {player.status}
-              </span>
-            )}
+            <span className="ml-2">
+              <StatusBadge status={player.status} chance={player.chance_of_playing} />
+            </span>
           </p>
         </div>
         <div className="flex gap-6 text-right">
@@ -100,6 +153,12 @@ export default async function PlayerPage({
           </Card>
         </div>
       </div>
+
+      {player.predictions[0]?.drivers && (
+        <div className="grid gap-4 lg:grid-cols-3">
+          <DriversPanel drivers={player.predictions[0].drivers} />
+        </div>
+      )}
     </div>
   );
 }

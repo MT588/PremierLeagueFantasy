@@ -54,6 +54,37 @@ export function FdrChip({
   );
 }
 
+const STATUS_INFO: Record<string, { label: string; cls: string }> = {
+  i: { label: "Injured", cls: "bg-[#d03b3b]/20 text-[#ef8f8f] border-[#d03b3b]/50" },
+  d: { label: "Doubtful", cls: "bg-[#ec835a]/15 text-[#f0a888] border-[#ec835a]/40" },
+  s: { label: "Suspended", cls: "bg-[#d03b3b]/20 text-[#ef8f8f] border-[#d03b3b]/50" },
+  u: { label: "Unavailable", cls: "bg-[#383835] text-[#c3c2b7] border-[#4a4a46]" },
+  n: { label: "Unavailable", cls: "bg-[#383835] text-[#c3c2b7] border-[#4a4a46]" },
+};
+
+export function StatusBadge({
+  status,
+  chance,
+}: {
+  status: string | null;
+  chance?: number | null;
+}) {
+  if (!status || status === "a") return null;
+  const info = STATUS_INFO[status] ?? STATUS_INFO.u;
+  const label =
+    status === "d" && chance != null ? `${info.label} ${chance}%` : info.label;
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${info.cls}`}
+    >
+      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden>
+        <path d="M4 1h2v5H4zM4 7.5h2V9.5H4z" fill="currentColor" />
+      </svg>
+      {label}
+    </span>
+  );
+}
+
 export function Sparkline({ points }: { points: number[] }) {
   if (!points.length) return <span className="text-ink-3">—</span>;
   const w = 96;

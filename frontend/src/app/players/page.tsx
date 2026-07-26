@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { api, PlayerRow, TeamOut } from "@/lib/api";
 import { fmtPrice, POSITIONS } from "@/lib/ui";
-import { Card, RatingBadge, Sparkline } from "@/components/ui";
+import { Card, RatingBadge, Sparkline, StatusBadge } from "@/components/ui";
 
 const SORTS = [
   { key: "predicted_points", label: "Predicted" },
@@ -134,6 +134,9 @@ export default function PlayersPage() {
                       {p.web_name}
                     </Link>
                     <span className="ml-1.5 text-xs text-ink-3">{p.team_short}</span>
+                    <span className="ml-1.5">
+                      <StatusBadge status={p.status} chance={p.chance_of_playing} />
+                    </span>
                   </td>
                   <td className="px-3 py-2.5 text-ink-2">{POSITIONS[p.position]}</td>
                   <td className="px-3 py-2.5 text-right tabular-nums text-ink-2">{fmtPrice(p.price)}</td>

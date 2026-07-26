@@ -4,7 +4,7 @@ from sqlalchemy import text
 from app.db import engine
 from app.deps import current_season, next_gameweek
 from app.schemas import Meta, TeamOut
-from ml.train import MODEL_VERSION
+from ml.train_v2 import MODEL_VERSION
 
 router = APIRouter(tags=["meta"])
 
@@ -25,8 +25,8 @@ def meta() -> Meta:
             {"s": season_id},
         ).scalar()
         preds = conn.execute(
-            text("select count(*) from predictions where season_id = :s"),
-            {"s": season_id},
+            text("select count(*) from predictions where season_id = :s and model_version = :m"),
+            {"s": season_id, "m": MODEL_VERSION},
         ).scalar()
     return Meta(
         season=season_name,

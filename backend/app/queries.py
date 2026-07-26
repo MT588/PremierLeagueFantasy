@@ -34,8 +34,8 @@ last_season as (
 select ps.player_code as code, p.web_name,
        p.first_name || ' ' || p.second_name as full_name,
        ps.position, ps.team_code, t.short_name as team_short,
-       ps.now_cost / 10.0 as price, ps.status,
-       pr.predicted_points, pr.rating,
+       ps.now_cost / 10.0 as price, ps.status, ps.chance_of_playing,
+       pr.predicted_points, pr.rating, pr.p_start,
        round(r.form::numeric, 2) as form,
        round((r.xgi5 / greatest(r.mins5, 1) * 90)::numeric, 2) as xgi90,
        ls.pts as total_points_last_season,
@@ -47,7 +47,8 @@ left join recent r on r.player_code = ps.player_code
 left join last_season ls on ls.player_code = ps.player_code
 left join predictions pr on pr.season_id = ps.season_id
        and pr.player_code = ps.player_code and pr.gameweek = :gameweek
-where ps.season_id = :season_id
+       and pr.model_version = :model_version
+where ps.season_id = :season_id and ps.position between 1 and 4
 """
 
 PLAYER_HISTORY = """
@@ -74,8 +75,9 @@ limit 6
 """
 
 PLAYER_PREDICTIONS = """
-select gameweek, predicted_points, rating from predictions
+select gameweek, predicted_points, rating, p_start, drivers from predictions
 where season_id = :season_id and player_code = :code
+  and model_version = :model_version
 order by gameweek
 """
 
@@ -88,6 +90,7 @@ join players p on p.code = ps.player_code
 left join teams t on t.code = ps.team_code
 join predictions pr on pr.season_id = ps.season_id and pr.player_code = ps.player_code
 where ps.season_id = :season_id and pr.gameweek = any(:gameweeks)
+  and pr.model_version = :model_version
   and ps.status = 'a' and ps.team_code is not null
 group by ps.player_code, ps.position, ps.team_code, ps.now_cost, p.web_name, t.short_name
 """
