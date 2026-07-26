@@ -211,6 +211,17 @@ export function createApi(
       throw new ApiError(401, path);
     }
     if (!res.ok) throw new ApiError(res.status, path);
+
+    // A 200 that isn't JSON means the request never reached FastAPI — an
+    // interstitial redirected us somewhere and fetch followed it. Say so,
+    // rather than letting res.json() fail with "Unexpected token '<'".
+    const type = res.headers.get("content-type") ?? "";
+    if (!type.includes("json")) {
+      throw new Error(
+        `${path} returned ${type || "no content-type"} from ${res.url} ` +
+          `instead of JSON — check the API base URL is publicly reachable`,
+      );
+    }
     return res.json();
   }
 

@@ -25,11 +25,25 @@ const requireSession = cache(async () => {
 });
 
 /** Server-side fetch needs an absolute URL, so unlike the browser client this
- *  cannot use a relative path. On Vercel the API lives in the same deployment,
- *  so VERCEL_URL points at the right one for previews as well as production. */
+ *  cannot use a relative path.
+ *
+ *  This must be the project's public production domain, NOT VERCEL_URL. Under
+ *  Vercel's default Deployment Protection every URL except the production alias
+ *  redirects to an SSO page, so fetching VERCEL_URL server-side returns that
+ *  HTML page instead of JSON. Preview deployments therefore read from the
+ *  production API; only the browser (which uses a relative URL) stays on its
+ *  own deployment. */
 function baseUrl(): string {
+  // Server-only, so it can differ from the relative URL the browser uses.
+  if (process.env.API_ORIGIN) return process.env.API_ORIGIN;
   if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  // Safety net if API_ORIGIN is ever missing. This is populated at runtime even
+  // though it does not show up in `vercel env pull`. Never use VERCEL_URL here.
+  const production = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (production) return `https://${production}`;
+  if (process.env.VERCEL) {
+    throw new Error("API_ORIGIN is unset; set it to the API's public origin.");
+  }
   return "http://localhost:8000";
 }
 

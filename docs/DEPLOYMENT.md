@@ -97,12 +97,35 @@ All on the single `plfantasy` project:
 | `CORS_ORIGINS` | api | `http://localhost:3000` — local dev only |
 | `NEXT_PUBLIC_SUPABASE_URL` | web | |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | web | Publishable key; safe to expose |
+| `API_ORIGIN` | web (server) | `https://plfantasy.vercel.app` — see below |
 | `NEXT_PUBLIC_API_URL` | web | **Deliberately unset on Vercel** |
 
-That last one matters: with it unset, the browser client falls back to a
-relative URL (same-origin) and the server client falls back to `VERCEL_URL`, so
-production and preview deployments each talk to their own API. Locally,
-`frontend/.env.local` sets it to `http://localhost:8000`.
+The last two are the subtle part, and got this wrong once already.
+
+With `NEXT_PUBLIC_API_URL` unset, the **browser** uses a relative URL, so it
+stays same-origin and each preview deployment talks to its own API. But
+**server components can't use a relative URL** — server-side `fetch` needs an
+absolute one — so they read `API_ORIGIN`.
+
+`API_ORIGIN` must be the **public production domain**. It is tempting to derive
+it from `VERCEL_URL`, which names the current deployment, but under Vercel's
+default Deployment Protection every URL *except* the production alias `302`s to
+an SSO page. `fetch` follows that redirect and the server component receives an
+HTML login page, which fails as:
+
+```
+SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+```
+
+That symptom means the API base URL is not publicly reachable — it is not a
+Supabase or auth problem. `createApi` now checks the response content type and
+raises a message naming the URL instead of letting `JSON.parse` fail this way.
+
+`VERCEL_PROJECT_PRODUCTION_URL` is a working fallback and *is* populated at
+runtime, even though it does not appear in `vercel env pull` output.
+
+Locally, `frontend/.env.local` sets `NEXT_PUBLIC_API_URL=http://localhost:8000`,
+which covers both the browser and the server.
 
 `DATABASE_URL` must be the **transaction** pooler string from Supabase →
 Connect, on port **6543** (not the 5432 session pooler used locally):
