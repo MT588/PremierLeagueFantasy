@@ -14,7 +14,7 @@ function TopBarList({ players }: { players: PlayerRow[] }) {
         <li key={p.code}>
           <Link
             href={`/players/${p.code}`}
-            // Dynamic route, nothing to prefetch — see columns.tsx.
+            // Prefetching 404s in production — see Sidebar.tsx.
             prefetch={false}
             className="group grid grid-cols-[1.5rem_11rem_1fr_3rem] items-center gap-3"
           >
@@ -67,7 +67,8 @@ export default async function Dashboard() {
           <div className="text-xs uppercase tracking-wide text-ink-3">Model</div>
           <div className="mt-1 text-2xl font-semibold">{meta.model_version}</div>
           <div className="mt-1 text-sm text-ink-2">
-            <Link href="/team" className="text-accent hover:underline">
+            {/* Prefetching 404s in production — see Sidebar.tsx. */}
+            <Link href="/team" prefetch={false} className="text-accent hover:underline">
               view optimal team →
             </Link>
           </div>

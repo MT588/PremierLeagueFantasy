@@ -1,9 +1,9 @@
-/** Skeleton shown while a server-rendered page under (app) is being built.
+/** Skeleton shown while a page under (app) loads.
  *
- *  Only / and /players/[code] reach it — the rest of the group is static and
- *  prefetched, so it swaps in without a server roundtrip. Those two are
- *  force-dynamic and their links carry prefetch={false}, so without this the
- *  browser would sit on the old page with no feedback while the API answers. */
+ *  Every link carries prefetch={false} while prefetching is broken in
+ *  production (see Sidebar.tsx), so nothing is warm on click. It barely
+ *  registers on the static routes; it earns its keep on / and
+ *  /players/[code], which are force-dynamic and wait on the API. */
 export default function Loading() {
   return (
     <div className="space-y-4">

@@ -19,11 +19,10 @@ export const nameCol: Col = {
   label: "Player",
   render: (p) => (
     <>
-      {/* /players/[code] is force-dynamic, so it has no static shell to
-          prefetch and Next answers the prefetch with a 404 it retries every
-          10s. With up to 300 rows on screen that is a lot of dead requests. */}
       <Link
         href={`/players/${p.code}`}
+        // Prefetching 404s in production — see Sidebar.tsx. Worst offender:
+        // up to 300 rows on screen, each retrying every 10 seconds.
         prefetch={false}
         className="hover:text-pitch hover:underline"
       >

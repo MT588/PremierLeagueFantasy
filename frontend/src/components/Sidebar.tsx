@@ -5,16 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 
-/** `prefetch: false` marks a force-dynamic route: it has no static shell, so
- *  Next answers the prefetch with a 404 and retries it every 10 seconds for as
- *  long as the sidebar is on screen — which is always. */
-const GROUPS: {
-  label: string;
-  items: { href: string; label: string; prefetch?: false }[];
-}[] = [
+const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
   {
     label: "Overview",
-    items: [{ href: "/", label: "Dashboard", prefetch: false }],
+    items: [{ href: "/", label: "Dashboard" }],
   },
   {
     label: "Analysis",
@@ -82,7 +76,15 @@ export function Sidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    prefetch={item.prefetch}
+                    // TEMPORARY — remove once Vercel serves prefetch segments
+                    // under Services. Next 16 opens every prefetch with a
+                    // Next-Router-Segment-Prefetch: /_tree request; this
+                    // deployment has no route for it, so it 404s and the
+                    // router retries every 10s. Reproduces on /login, which is
+                    // public and fully prerendered, and only in production —
+                    // `next start` on the same build answers 200. Prefetching
+                    // is dead either way, so this only silences the console.
+                    prefetch={false}
                     // Otherwise the drawer stays over the page you just opened.
                     onClick={() => setOpen(false)}
                     aria-current={active ? "page" : undefined}

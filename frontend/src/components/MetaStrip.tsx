@@ -9,9 +9,10 @@ import { api } from "@/lib/api.client";
  *  server-side, so there is nothing for the browser to fetch or rate-limit.
  *
  *  Read in the browser rather than on the server on purpose. This sits in the
- *  (app) layout, so a server-side session read here makes every route under
- *  that layout dynamic; Next then has no static shell to prefetch and answers
- *  every <Link> prefetch with a 404. */
+ *  (app) layout, so a server-side session read here made every route under it
+ *  dynamic — including the seven that are client components and hold no server
+ *  data. Reading meta here instead lets those prerender, so they cost no
+ *  function invocation. (It does not fix prefetching; see Sidebar.tsx.) */
 export function MetaStrip() {
   const [meta, setMeta] = useState<Meta | null>(null);
   const [failed, setFailed] = useState(false);

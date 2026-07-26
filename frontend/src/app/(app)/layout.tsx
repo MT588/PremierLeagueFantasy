@@ -11,7 +11,8 @@ export default function AppLayout({
   return (
     <>
       <header className="flex flex-wrap items-center justify-between gap-3 bg-pitch px-5 py-4 text-white sm:px-7">
-        <Link href="/">
+        {/* Prefetching 404s in production — see Sidebar.tsx. */}
+        <Link href="/" prefetch={false}>
           <div className="font-display text-[11px] font-bold uppercase tracking-[0.12em] text-gold">
             Fantasy Premier League
           </div>
