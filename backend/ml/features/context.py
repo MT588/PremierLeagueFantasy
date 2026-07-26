@@ -38,7 +38,7 @@ class FeatureContext:
     club_elo: pd.DataFrame  # team_code, valid_from(date as ts), elo
     manager_stints: pd.DataFrame  # team_code, start_date(ts)
     euro: dict[tuple[int, int], int]  # (season_id, team_code) -> 0/1/2
-    intl: pd.DataFrame  # player_code, tournament, year, minutes, team_progress
+    intl: pd.DataFrame  # per player-tournament: minutes/starts/goals/progress/last match
     setpiece: pd.DataFrame  # season_id, player_code, pen/corner/fk orders
     team_fixtures: pd.DataFrame  # team_code, kickoff_time, goals_for, goals_against
     understat: pd.DataFrame  # per player per match
@@ -89,8 +89,8 @@ def load_context(engine: Engine) -> FeatureContext:
         ).all()
         intl = pd.read_sql(
             text(
-                "select player_code, tournament, year, minutes, team_progress "
-                "from international_load"
+                "select player_code, tournament, year, minutes, matches, starts, "
+                "goals, team_progress, last_match_date from international_load"
             ),
             conn,
         )
