@@ -1,0 +1,23 @@
+[project]
+name = "plfantasy"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.140.0",
+    "httpx>=0.28.1",
+    "lightgbm>=4.7.0",
+    "pandas>=3.0.5",
+    "psycopg[binary]>=3.3.4",
+    "pulp>=3.3.2",
+    "pydantic-settings>=2.14.2",
+    "scikit-learn>=1.9.0",
+    "sqlalchemy>=2.0.51",
+    "tenacity>=9.1.4",
+    "uvicorn>=0.51.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.0",
+]
