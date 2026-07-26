@@ -49,3 +49,37 @@ def clubelo_name(team_code: int) -> str:
 
 def footballdata_name(team_code: int) -> str:
     return TEAM_NAMES[team_code][2]
+
+
+# Understat team_title values (differ from all of the above for several clubs)
+UNDERSTAT_NAMES: dict[int, str] = {
+    1: "Manchester United",
+    2: "Leeds",
+    3: "Arsenal",
+    4: "Newcastle United",
+    6: "Tottenham",
+    7: "Aston Villa",
+    8: "Chelsea",
+    9: "Coventry",
+    11: "Everton",
+    13: "Leicester",
+    14: "Liverpool",
+    17: "Nottingham Forest",
+    20: "Southampton",
+    21: "West Ham",
+    31: "Crystal Palace",
+    36: "Brighton",
+    39: "Wolverhampton Wanderers",
+    40: "Ipswich",
+    43: "Manchester City",
+    45: "Norwich",
+    49: "Sheffield United",
+    54: "Fulham",
+    56: "Sunderland",
+    57: "Watford",
+    88: "Hull",
+    90: "Burnley",
+    91: "Bournemouth",
+    94: "Brentford",
+    102: "Luton",
+}
