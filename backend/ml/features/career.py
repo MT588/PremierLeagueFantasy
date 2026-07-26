@@ -17,19 +17,46 @@ MINUTES_FLOOR = 900  # ignore bit-part seasons in multi-season averages
 SEASON_MINUTES = 38 * 90.0
 
 
-def add(df: pd.DataFrame, birth_dates: pd.Series | None = None) -> pd.DataFrame:
+def season_totals(
+    df: pd.DataFrame, value_cols: tuple[str, ...] = ()
+) -> pd.DataFrame:
+    """Per (player, season) totals over completed matches — the shared basis for
+    the multi-season features here and for the previous-season priors in
+    form_eb. Indexed by (player_code, start_year).
+
+    `value_cols` are summed skipping nulls, and each gets a companion
+    `<col>__minutes` holding the minutes played in the matches where that column
+    was actually recorded, so a rate over a partially-recorded stat (xG before
+    2022-23, defensive contributions before 2025-26) divides by the exposure it
+    was observed over rather than by the whole season.
+    """
     hist = df[~df["is_inference"]]
-    agg = (
-        hist.groupby(["player_code", "start_year"])
-        .agg(
-            pts=("total_points", "sum"),
-            mins=("minutes", "sum"),
-            games=("total_points", "count"),
-            starts=("minutes", lambda s: (s >= 60).sum()),
+    named = {
+        "pts": ("total_points", "sum"),
+        "mins": ("minutes", "sum"),
+        "games": ("total_points", "count"),
+        "starts": ("minutes", lambda s: (s >= 60).sum()),
+    }
+    agg = hist.groupby(["player_code", "start_year"]).agg(**named)
+
+    for col in value_cols:
+        if col not in hist.columns:
+            continue
+        observed = hist[col].notna()
+        extra = (
+            hist.assign(
+                _v=hist[col].where(observed, 0.0),
+                _m=hist["minutes"].where(observed, 0.0),
+            )
+            .groupby(["player_code", "start_year"])
+            .agg(**{col: ("_v", "sum"), f"{col}__minutes": ("_m", "sum")})
         )
-        .reset_index()
-    )
-    key = agg.set_index(["player_code", "start_year"])
+        agg = agg.join(extra)
+    return agg
+
+
+def add(df: pd.DataFrame, birth_dates: pd.Series | None = None) -> pd.DataFrame:
+    key = season_totals(df)
 
     def season_stat(col: str) -> dict:
         return key[col].to_dict()

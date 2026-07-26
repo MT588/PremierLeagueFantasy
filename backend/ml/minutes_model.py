@@ -45,14 +45,17 @@ def minutes_class(minutes: pd.Series) -> np.ndarray:
     return np.select([minutes <= 0, minutes < 60], [0, 1], default=2)
 
 
-def train(fit: pd.DataFrame, valid: pd.DataFrame) -> lgb.Booster:
+def train(
+    fit: pd.DataFrame, valid: pd.DataFrame, features: list[str] | None = None
+) -> lgb.Booster:
+    features = features or MINUTES_FEATURES
     dtrain = lgb.Dataset(
-        fit[MINUTES_FEATURES],
+        fit[features],
         label=minutes_class(fit["minutes"]),
         categorical_feature=["position"],
     )
     dvalid = lgb.Dataset(
-        valid[MINUTES_FEATURES], label=minutes_class(valid["minutes"]), reference=dtrain
+        valid[features], label=minutes_class(valid["minutes"]), reference=dtrain
     )
     model = lgb.train(
         PARAMS,
@@ -64,18 +67,23 @@ def train(fit: pd.DataFrame, valid: pd.DataFrame) -> lgb.Booster:
     return model
 
 
-def refit(full: pd.DataFrame, best_iteration: int) -> lgb.Booster:
+def refit(
+    full: pd.DataFrame, best_iteration: int, features: list[str] | None = None
+) -> lgb.Booster:
+    features = features or MINUTES_FEATURES
     dtrain = lgb.Dataset(
-        full[MINUTES_FEATURES],
+        full[features],
         label=minutes_class(full["minutes"]),
         categorical_feature=["position"],
     )
     return lgb.train(PARAMS, dtrain, num_boost_round=max(best_iteration, 10))
 
 
-def predict_proba(model: lgb.Booster, df: pd.DataFrame) -> np.ndarray:
+def predict_proba(
+    model: lgb.Booster, df: pd.DataFrame, features: list[str] | None = None
+) -> np.ndarray:
     return model.predict(
-        df[MINUTES_FEATURES], num_iteration=model.best_iteration or None
+        df[features or MINUTES_FEATURES], num_iteration=model.best_iteration or None
     )
 
 
