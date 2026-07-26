@@ -68,10 +68,9 @@ def run(horizon: int = 5) -> int:
     frame.loc[gated, "predicted_points"] = 0.0
 
     # double gameweeks: sum per-fixture predictions per (player, gameweek)
-    agg = (
-        frame.groupby(["player_code", "gameweek", "position"], as_index=False)
-        .agg(predicted_points=("predicted_points", "sum"),
-             predicted_minutes=("predicted_minutes", "mean"))
+    agg = frame.groupby(["player_code", "gameweek", "position"], as_index=False).agg(
+        predicted_points=("predicted_points", "sum"),
+        predicted_minutes=("predicted_minutes", "mean"),
     )
     agg["rating"] = assign_ratings(agg)
 
@@ -81,21 +80,28 @@ def run(horizon: int = 5) -> int:
             "player_code": int(r.player_code),
             "gameweek": int(r.gameweek),
             "predicted_points": round(float(r.predicted_points), 3),
-            "predicted_minutes": None if pd.isna(r.predicted_minutes)
+            "predicted_minutes": None
+            if pd.isna(r.predicted_minutes)
             else round(float(r.predicted_minutes), 1),
             "rating": r.rating,
             "model_version": MODEL_VERSION,
         }
         for r in agg.itertuples()
     ]
-    n = upsert(engine, "predictions", rows,
-               ["season_id", "player_code", "gameweek", "model_version"])
+    n = upsert(
+        engine,
+        "predictions",
+        rows,
+        ["season_id", "player_code", "gameweek", "model_version"],
+    )
     log.info("wrote %d predictions", n)
     return n
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
+    )
     parser = argparse.ArgumentParser()
     parser.add_argument("--horizon", type=int, default=5)
     args = parser.parse_args()

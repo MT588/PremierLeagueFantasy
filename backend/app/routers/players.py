@@ -14,7 +14,14 @@ from app.schemas import (
 
 router = APIRouter(tags=["players"])
 
-SORTABLE = {"predicted_points", "price", "form", "xgi90", "total_points_last_season", "web_name"}
+SORTABLE = {
+    "predicted_points",
+    "price",
+    "form",
+    "xgi90",
+    "total_points_last_season",
+    "web_name",
+}
 
 
 @router.get("/players", response_model=list[PlayerRow])
@@ -30,9 +37,13 @@ def list_players(
     season_id, _ = current_season()
     gw = next_gameweek(season_id)
     with engine.connect() as conn:
-        rows = conn.execute(
-            text(queries.PLAYERS_LIST), {"season_id": season_id, "gameweek": gw}
-        ).mappings().all()
+        rows = (
+            conn.execute(
+                text(queries.PLAYERS_LIST), {"season_id": season_id, "gameweek": gw}
+            )
+            .mappings()
+            .all()
+        )
 
     players = [dict(r) for r in rows]
     if position:
@@ -42,7 +53,8 @@ def list_players(
     if search:
         s = search.lower()
         players = [
-            p for p in players
+            p
+            for p in players
             if s in p["web_name"].lower() or s in p["full_name"].lower()
         ]
     if sort == "web_name":
@@ -56,32 +68,44 @@ def list_players(
 def player_detail(code: int) -> PlayerDetail:
     season_id, _ = current_season()
     with engine.connect() as conn:
-        base = conn.execute(
-            text(
-                "select p.code, p.web_name, p.first_name || ' ' || p.second_name as full_name, "
-                "ps.position, ps.team_code, t.short_name as team_short, "
-                "ps.now_cost / 10.0 as price, ps.status "
-                "from players p "
-                "left join player_seasons ps on ps.player_code = p.code and ps.season_id = :sid "
-                "left join teams t on t.code = ps.team_code "
-                "where p.code = :code"
-            ),
-            {"code": code, "sid": season_id},
-        ).mappings().first()
+        base = (
+            conn.execute(
+                text(
+                    "select p.code, p.web_name, p.first_name || ' ' || p.second_name as full_name, "
+                    "ps.position, ps.team_code, t.short_name as team_short, "
+                    "ps.now_cost / 10.0 as price, ps.status "
+                    "from players p "
+                    "left join player_seasons ps on ps.player_code = p.code and ps.season_id = :sid "
+                    "left join teams t on t.code = ps.team_code "
+                    "where p.code = :code"
+                ),
+                {"code": code, "sid": season_id},
+            )
+            .mappings()
+            .first()
+        )
         if base is None:
             raise HTTPException(404, "unknown player code")
-        history = conn.execute(text(queries.PLAYER_HISTORY), {"code": code}).mappings().all()
+        history = (
+            conn.execute(text(queries.PLAYER_HISTORY), {"code": code}).mappings().all()
+        )
         upcoming = (
             conn.execute(
                 text(queries.PLAYER_UPCOMING),
                 {"season_id": season_id, "team_code": base["team_code"]},
-            ).mappings().all()
+            )
+            .mappings()
+            .all()
             if base["team_code"]
             else []
         )
-        preds = conn.execute(
-            text(queries.PLAYER_PREDICTIONS), {"season_id": season_id, "code": code}
-        ).mappings().all()
+        preds = (
+            conn.execute(
+                text(queries.PLAYER_PREDICTIONS), {"season_id": season_id, "code": code}
+            )
+            .mappings()
+            .all()
+        )
 
     return PlayerDetail(
         code=base["code"],
@@ -95,7 +119,9 @@ def player_detail(code: int) -> PlayerDetail:
         upcoming=[
             FixtureOut(
                 gameweek=u["gameweek"],
-                kickoff_time=u["kickoff_time"].isoformat() if u["kickoff_time"] else None,
+                kickoff_time=u["kickoff_time"].isoformat()
+                if u["kickoff_time"]
+                else None,
                 opponent_short=u["opponent_short"],
                 was_home=u["was_home"],
                 difficulty=u["difficulty"],

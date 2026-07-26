@@ -19,18 +19,18 @@ MAX_PER_CLUB = 3
 @dataclass
 class Candidate:
     player_code: int
-    position: int          # 1 GK, 2 DEF, 3 MID, 4 FWD
+    position: int  # 1 GK, 2 DEF, 3 MID, 4 FWD
     team_code: int
-    cost: int              # 0.1m units
+    cost: int  # 0.1m units
     predicted_points: float
 
 
 @dataclass
 class OptimalTeam:
-    squad: list[int]                 # 15 player codes
-    starting_xi: list[int]           # 11 player codes
+    squad: list[int]  # 15 player codes
+    starting_xi: list[int]  # 11 player codes
     captain: int
-    bench: list[int]                 # 4 codes, ordered by predicted points desc
+    bench: list[int]  # 4 codes, ordered by predicted points desc
     total_cost: int
     expected_points: float
     infeasible: bool = False

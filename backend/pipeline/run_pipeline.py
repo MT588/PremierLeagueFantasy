@@ -8,8 +8,14 @@ from sqlalchemy import text
 from app.db import engine
 
 TABLES = [
-    "seasons", "teams", "team_seasons", "players",
-    "player_seasons", "fixtures", "player_gameweeks", "predictions",
+    "seasons",
+    "teams",
+    "team_seasons",
+    "players",
+    "player_seasons",
+    "fixtures",
+    "player_gameweeks",
+    "predictions",
 ]
 
 
@@ -22,10 +28,16 @@ def print_counts() -> None:
 
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
+    )
     parser = argparse.ArgumentParser()
-    parser.add_argument("--historical", action="store_true", help="ingest vaastav CSV seasons")
-    parser.add_argument("--live", action="store_true", help="sync current season from FPL API")
+    parser.add_argument(
+        "--historical", action="store_true", help="ingest vaastav CSV seasons"
+    )
+    parser.add_argument(
+        "--live", action="store_true", help="sync current season from FPL API"
+    )
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--seasons", nargs="*", help="subset of seasons, e.g. 2024-25")
     args = parser.parse_args()

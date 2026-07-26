@@ -22,10 +22,14 @@ def optimal_team(
     gameweeks = list(range(gw, gw + horizon))
 
     with engine.connect() as conn:
-        rows = conn.execute(
-            text(queries.OPTIMIZER_CANDIDATES),
-            {"season_id": season_id, "gameweeks": gameweeks},
-        ).mappings().all()
+        rows = (
+            conn.execute(
+                text(queries.OPTIMIZER_CANDIDATES),
+                {"season_id": season_id, "gameweeks": gameweeks},
+            )
+            .mappings()
+            .all()
+        )
     if not rows:
         raise HTTPException(503, "no predictions available — run ml.predict first")
 

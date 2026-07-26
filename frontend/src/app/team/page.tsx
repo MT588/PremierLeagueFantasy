@@ -39,9 +39,9 @@ export default function TeamPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
     const t = setTimeout(() => {
+      setLoading(true);
+      setError(null);
       api
         .optimalTeam(budget, horizon)
         .then(setTeam)

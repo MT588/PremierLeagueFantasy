@@ -26,10 +26,10 @@ class PlayerRow(BaseModel):
     status: str | None
     predicted_points: float | None
     rating: str | None
-    form: float | None                 # avg points, last 5 appearances
+    form: float | None  # avg points, last 5 appearances
     xgi90: float | None
     total_points_last_season: int | None
-    recent_points: list[int]           # last 10 appearances, chronological
+    recent_points: list[int]  # last 10 appearances, chronological
 
 
 class FixtureOut(BaseModel):

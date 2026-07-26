@@ -51,9 +51,12 @@ def season_name_from_bootstrap(data: dict) -> str:
 
 
 STRENGTH_COLS = [
-    "strength_overall_home", "strength_overall_away",
-    "strength_attack_home", "strength_attack_away",
-    "strength_defence_home", "strength_defence_away",
+    "strength_overall_home",
+    "strength_overall_away",
+    "strength_attack_home",
+    "strength_attack_away",
+    "strength_defence_home",
+    "strength_defence_away",
 ]
 
 
@@ -90,17 +93,23 @@ def sync_live(engine: Engine) -> None:
     seasons = get_table("seasons")
     with engine.begin() as conn:
         conn.execute(update(seasons).values(is_current=False))
-        conn.execute(update(seasons).where(seasons.c.id == season_id).values(is_current=True))
+        conn.execute(
+            update(seasons).where(seasons.c.id == season_id).values(is_current=True)
+        )
 
     # --- teams ---
     teams = pd.DataFrame(data["teams"])
     upsert(engine, "teams", records(teams[["code", "name", "short_name"]]), ["code"])
     ts = teams[
         [
-            "code", "id",
-            "strength_overall_home", "strength_overall_away",
-            "strength_attack_home", "strength_attack_away",
-            "strength_defence_home", "strength_defence_away",
+            "code",
+            "id",
+            "strength_overall_home",
+            "strength_overall_away",
+            "strength_attack_home",
+            "strength_attack_away",
+            "strength_defence_home",
+            "strength_defence_away",
         ]
     ].rename(columns={"code": "team_code", "id": "fpl_team_id"})
     ts["season_id"] = season_id
@@ -117,8 +126,15 @@ def sync_live(engine: Engine) -> None:
         ["code"],
     )
     ps = elements[
-        ["code", "id", "element_type", "team_code", "now_cost", "status",
-         "chance_of_playing_next_round"]
+        [
+            "code",
+            "id",
+            "element_type",
+            "team_code",
+            "now_cost",
+            "status",
+            "chance_of_playing_next_round",
+        ]
     ].rename(
         columns={
             "code": "player_code",
@@ -128,7 +144,9 @@ def sync_live(engine: Engine) -> None:
         }
     )
     ps["season_id"] = season_id
-    n_players = upsert(engine, "player_seasons", records(ps), ["season_id", "player_code"])
+    n_players = upsert(
+        engine, "player_seasons", records(ps), ["season_id", "player_code"]
+    )
     log.info("live sync: %d players in current pool", n_players)
 
     # --- fixtures ---
@@ -138,7 +156,9 @@ def sync_live(engine: Engine) -> None:
             "season_id": season_id,
             "fpl_fixture_id": fixtures["id"],
             "gameweek": fixtures["event"].astype("Int64"),
-            "kickoff_time": pd.to_datetime(fixtures["kickoff_time"], utc=True, errors="coerce"),
+            "kickoff_time": pd.to_datetime(
+                fixtures["kickoff_time"], utc=True, errors="coerce"
+            ),
             "home_team_code": fixtures["team_h"].map(team_id_to_code),
             "away_team_code": fixtures["team_a"].map(team_id_to_code),
             "home_difficulty": fixtures["team_h_difficulty"],
@@ -174,7 +194,9 @@ def sync_live(engine: Engine) -> None:
                 row[target] = h.get(source)
             rows.append(row)
     n = upsert(
-        engine, "player_gameweeks", rows,
+        engine,
+        "player_gameweeks",
+        rows,
         ["season_id", "player_code", "gameweek", "fpl_fixture_id"],
     )
     log.info("live sync: %d player-gameweek rows", n)

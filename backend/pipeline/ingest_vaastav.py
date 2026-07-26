@@ -18,7 +18,9 @@ from pipeline.upsert import upsert
 
 log = logging.getLogger(__name__)
 
-RAW_BASE = "https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data"
+RAW_BASE = (
+    "https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data"
+)
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
 SEASONS = ["2021-22", "2022-23", "2023-24", "2024-25", "2025-26"]
 SEASON_FILES = ["players_raw.csv", "teams.csv", "fixtures.csv", "gws/merged_gw.csv"]
@@ -90,7 +92,9 @@ def get_season_id(engine: Engine, season: str) -> int:
     upsert(engine, "seasons", [{"name": season, "start_year": start_year}], ["name"])
     seasons = get_table("seasons")
     with engine.connect() as conn:
-        return conn.execute(select(seasons.c.id).where(seasons.c.name == season)).scalar_one()
+        return conn.execute(
+            select(seasons.c.id).where(seasons.c.name == season)
+        ).scalar_one()
 
 
 def ingest_season(engine: Engine, season: str) -> dict[str, int]:
@@ -112,14 +116,20 @@ def ingest_season(engine: Engine, season: str) -> dict[str, int]:
     )
     ts = teams[
         [
-            "code", "id",
-            "strength_overall_home", "strength_overall_away",
-            "strength_attack_home", "strength_attack_away",
-            "strength_defence_home", "strength_defence_away",
+            "code",
+            "id",
+            "strength_overall_home",
+            "strength_overall_away",
+            "strength_attack_home",
+            "strength_attack_away",
+            "strength_defence_home",
+            "strength_defence_away",
         ]
     ].rename(columns={"code": "team_code", "id": "fpl_team_id"})
     ts["season_id"] = season_id
-    counts["team_seasons"] = upsert(engine, "team_seasons", records(ts), ["season_id", "team_code"])
+    counts["team_seasons"] = upsert(
+        engine, "team_seasons", records(ts), ["season_id", "team_code"]
+    )
 
     team_id_to_code = dict(zip(teams["id"], teams["code"]))
 
@@ -132,8 +142,15 @@ def ingest_season(engine: Engine, season: str) -> dict[str, int]:
         ["code"],
     )
     ps = p[
-        ["code", "id", "element_type", "team_code", "now_cost", "status",
-         "chance_of_playing_next_round"]
+        [
+            "code",
+            "id",
+            "element_type",
+            "team_code",
+            "now_cost",
+            "status",
+            "chance_of_playing_next_round",
+        ]
     ].rename(
         columns={
             "code": "player_code",
@@ -155,7 +172,9 @@ def ingest_season(engine: Engine, season: str) -> dict[str, int]:
             "season_id": season_id,
             "fpl_fixture_id": fixtures["id"],
             "gameweek": fixtures["event"].astype("Int64"),
-            "kickoff_time": pd.to_datetime(fixtures["kickoff_time"], utc=True, errors="coerce"),
+            "kickoff_time": pd.to_datetime(
+                fixtures["kickoff_time"], utc=True, errors="coerce"
+            ),
             "home_team_code": fixtures["team_h"].map(team_id_to_code),
             "away_team_code": fixtures["team_a"].map(team_id_to_code),
             "home_difficulty": fixtures["team_h_difficulty"],
@@ -165,7 +184,9 @@ def ingest_season(engine: Engine, season: str) -> dict[str, int]:
             "finished": fixtures["finished"].astype(bool),
         }
     )
-    counts["fixtures"] = upsert(engine, "fixtures", records(fx), ["season_id", "fpl_fixture_id"])
+    counts["fixtures"] = upsert(
+        engine, "fixtures", records(fx), ["season_id", "fpl_fixture_id"]
+    )
 
     # --- player_gameweeks ---
     gw = pd.DataFrame(
@@ -185,9 +206,13 @@ def ingest_season(engine: Engine, season: str) -> dict[str, int]:
     if unmapped:
         log.warning("%s: dropping %d rows with unmapped element ids", season, unmapped)
         gw = gw.dropna(subset=["player_code"])
-    gw = gw.drop_duplicates(subset=["season_id", "player_code", "gameweek", "fpl_fixture_id"])
+    gw = gw.drop_duplicates(
+        subset=["season_id", "player_code", "gameweek", "fpl_fixture_id"]
+    )
     counts["player_gameweeks"] = upsert(
-        engine, "player_gameweeks", records(gw),
+        engine,
+        "player_gameweeks",
+        records(gw),
         ["season_id", "player_code", "gameweek", "fpl_fixture_id"],
     )
 

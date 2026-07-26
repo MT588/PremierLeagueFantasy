@@ -40,7 +40,9 @@ PARAMS = {
 
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
+    )
     df = build_training_frame(engine)
     log.info("training frame: %d rows", len(df))
 
@@ -49,7 +51,9 @@ def main() -> None:
     test = df[df["season_name"] == TEST_SEASON]
     log.info("split: train=%d valid=%d test=%d", len(train), len(valid), len(test))
 
-    dtrain = lgb.Dataset(train[FEATURES], label=train[TARGET], categorical_feature=["position"])
+    dtrain = lgb.Dataset(
+        train[FEATURES], label=train[TARGET], categorical_feature=["position"]
+    )
     dvalid = lgb.Dataset(valid[FEATURES], label=valid[TARGET], reference=dtrain)
 
     model = lgb.train(
@@ -66,7 +70,9 @@ def main() -> None:
 
     ARTIFACTS.mkdir(exist_ok=True)
     model.save_model(str(ARTIFACTS / f"model_{MODEL_VERSION}.txt"))
-    (ARTIFACTS / f"metrics_{MODEL_VERSION}.json").write_text(json.dumps(report, indent=2))
+    (ARTIFACTS / f"metrics_{MODEL_VERSION}.json").write_text(
+        json.dumps(report, indent=2)
+    )
     log.info("saved model + metrics to %s", ARTIFACTS)
 
     if report["model"]["mae"] >= report["baseline_last5"]["mae"]:

@@ -51,15 +51,31 @@ FEATURES = [
     # rolling form
     *[f"points_avg_{w}" for w in ROLL_WINDOWS],
     *[f"minutes_avg_{w}" for w in ROLL_WINDOWS],
-    "goals_sum_5", "assists_sum_5", "bonus_avg_5", "bps_avg_5", "ict_avg_5",
+    "goals_sum_5",
+    "assists_sum_5",
+    "bonus_avg_5",
+    "bps_avg_5",
+    "ict_avg_5",
     # per-90 expected rates
-    "xg90_5", "xa90_5", "xgi90_5", "xgi90_10",
+    "xg90_5",
+    "xa90_5",
+    "xgi90_5",
+    "xgi90_10",
     # availability / continuity / class
-    "started_last", "new_season", "season_ppg", "prev_season_ppg",
+    "started_last",
+    "new_season",
+    "season_ppg",
+    "prev_season_ppg",
     # fixture context
-    "was_home_i", "fdr", "own_attack", "own_overall", "opp_defence", "opp_overall",
+    "was_home_i",
+    "fdr",
+    "own_attack",
+    "own_overall",
+    "opp_defence",
+    "opp_overall",
     # meta
-    "position", "value",
+    "position",
+    "value",
 ]
 
 TARGET = "total_points"
@@ -72,9 +88,9 @@ def load_history(engine: Engine) -> pd.DataFrame:
 
 
 def _sort(df: pd.DataFrame) -> pd.DataFrame:
-    return df.sort_values(["player_code", "start_year", "gameweek", "kickoff_time"]).reset_index(
-        drop=True
-    )
+    return df.sort_values(
+        ["player_code", "start_year", "gameweek", "kickoff_time"]
+    ).reset_index(drop=True)
 
 
 def add_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -98,15 +114,21 @@ def add_features(df: pd.DataFrame) -> pd.DataFrame:
     df["assists_sum_5"] = g["assists"].transform(
         lambda s: s.shift(1).rolling(5, min_periods=1).sum()
     )
-    df["bonus_avg_5"] = g["bonus"].transform(lambda s: s.shift(1).rolling(5, min_periods=1).mean())
-    df["bps_avg_5"] = g["bps"].transform(lambda s: s.shift(1).rolling(5, min_periods=1).mean())
+    df["bonus_avg_5"] = g["bonus"].transform(
+        lambda s: s.shift(1).rolling(5, min_periods=1).mean()
+    )
+    df["bps_avg_5"] = g["bps"].transform(
+        lambda s: s.shift(1).rolling(5, min_periods=1).mean()
+    )
     df["ict_avg_5"] = g["ict_index"].transform(
         lambda s: s.shift(1).rolling(5, min_periods=1).mean()
     )
 
     # expected-stat rates per 90 (NaN-safe: 2021-22 has no xG data)
     for w in (5, 10):
-        min_sum = g["minutes"].transform(lambda s, w=w: s.shift(1).rolling(w, min_periods=1).sum())
+        min_sum = g["minutes"].transform(
+            lambda s, w=w: s.shift(1).rolling(w, min_periods=1).sum()
+        )
         for out, col in (
             (f"xg90_{w}", "expected_goals"),
             (f"xa90_{w}", "expected_assists"),
@@ -130,7 +152,9 @@ def add_features(df: pd.DataFrame) -> pd.DataFrame:
 
     # previous season points-per-appearance: captures player class independent
     # of the last-few-games form window (critical for pre-season predictions)
-    ppg = df.groupby(["player_code", "start_year"])["total_points"].agg(["sum", "count"])
+    ppg = df.groupby(["player_code", "start_year"])["total_points"].agg(
+        ["sum", "count"]
+    )
     ppg_map = (ppg["sum"] / ppg["count"].clip(lower=1)).to_dict()
     df["prev_season_ppg"] = [
         ppg_map.get((c, y - 1)) for c, y in zip(df["player_code"], df["start_year"])
@@ -156,7 +180,9 @@ def build_inference_frame(
             conn,
             params={"season_id": season_id, "gameweeks": gameweeks},
         )
-        pool = pd.read_sql(text(CURRENT_POOL_SQL), conn, params={"season_id": season_id})
+        pool = pd.read_sql(
+            text(CURRENT_POOL_SQL), conn, params={"season_id": season_id}
+        )
         start_year = conn.execute(
             text("select start_year from seasons where id = :sid"), {"sid": season_id}
         ).scalar_one()
@@ -168,8 +194,15 @@ def build_inference_frame(
         columns={"away_team_code": "team_code", "home_team_code": "opponent_team_code"}
     ).assign(was_home=False, fdr=fixtures["away_difficulty"])
     team_fixtures = pd.concat([home, away], ignore_index=True)[
-        ["gameweek", "fpl_fixture_id", "kickoff_time", "team_code", "opponent_team_code",
-         "was_home", "fdr"]
+        [
+            "gameweek",
+            "fpl_fixture_id",
+            "kickoff_time",
+            "team_code",
+            "opponent_team_code",
+            "was_home",
+            "fdr",
+        ]
     ]
 
     stubs = pool.merge(team_fixtures, on="team_code", how="inner")

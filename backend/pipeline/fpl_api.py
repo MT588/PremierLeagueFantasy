@@ -25,7 +25,9 @@ def fixtures() -> list:
     return get_json("fixtures/")
 
 
-async def element_summaries(element_ids: list[int], concurrency: int = 8) -> dict[int, dict]:
+async def element_summaries(
+    element_ids: list[int], concurrency: int = 8
+) -> dict[int, dict]:
     """Fetch element-summary for many players with bounded concurrency."""
     sem = asyncio.Semaphore(concurrency)
     results: dict[int, dict] = {}

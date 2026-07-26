@@ -20,7 +20,9 @@ def _clean(row: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
-def upsert(engine: Engine, table_name: str, rows: list[dict], conflict_cols: list[str]) -> int:
+def upsert(
+    engine: Engine, table_name: str, rows: list[dict], conflict_cols: list[str]
+) -> int:
     """Batched INSERT ... ON CONFLICT DO UPDATE. Returns number of rows sent."""
     if not rows:
         return 0
