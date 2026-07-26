@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from app.constants import MODEL_VERSION
+from app.constants import V2_VERSION as MODEL_VERSION
 from app.db import engine
 from ml import minutes_model, points_model
 from ml.features import FEATURES, build_training_frame
