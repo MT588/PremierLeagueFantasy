@@ -4,7 +4,7 @@ import asyncio
 import logging
 
 import pandas as pd
-from sqlalchemy import Engine, update
+from sqlalchemy import Engine, text, update
 
 from app.db import get_table
 from pipeline import fpl_api
@@ -50,6 +50,37 @@ def season_name_from_bootstrap(data: dict) -> str:
     return f"{start_year}-{str(start_year + 1)[2:]}"
 
 
+STRENGTH_COLS = [
+    "strength_overall_home", "strength_overall_away",
+    "strength_attack_home", "strength_attack_away",
+    "strength_defence_home", "strength_defence_away",
+]
+
+
+def backfill_strengths(engine: Engine, season_id: int) -> None:
+    """The FPL API serves zeroed team strength ratings pre-season. Backfill
+    each zero from the team's most recent prior season, or the league
+    average of the prior season for newly promoted teams."""
+    with engine.begin() as conn:
+        for col in STRENGTH_COLS:
+            conn.execute(
+                text(
+                    f"""
+                    update team_seasons ts set {col} = coalesce(
+                      (select prev.{col} from team_seasons prev
+                       where prev.team_code = ts.team_code
+                         and prev.season_id < :sid and coalesce(prev.{col}, 0) > 0
+                       order by prev.season_id desc limit 1),
+                      (select avg(prev.{col})::smallint from team_seasons prev
+                       where prev.season_id < :sid and coalesce(prev.{col}, 0) > 0)
+                    )
+                    where ts.season_id = :sid and coalesce(ts.{col}, 0) = 0
+                    """
+                ),
+                {"sid": season_id},
+            )
+
+
 def sync_live(engine: Engine) -> None:
     data = fpl_api.bootstrap_static()
     season = season_name_from_bootstrap(data)
@@ -74,6 +105,7 @@ def sync_live(engine: Engine) -> None:
     ].rename(columns={"code": "team_code", "id": "fpl_team_id"})
     ts["season_id"] = season_id
     upsert(engine, "team_seasons", records(ts), ["season_id", "team_code"])
+    backfill_strengths(engine, season_id)
     team_id_to_code = dict(zip(teams["id"], teams["code"]))
 
     # --- players ---
