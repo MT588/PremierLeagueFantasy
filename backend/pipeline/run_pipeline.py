@@ -8,7 +8,9 @@ from sqlalchemy import text
 
 from app.db import engine
 
-MIGRATIONS_DIR = Path(__file__).resolve().parent.parent.parent / "supabase" / "migrations"
+MIGRATIONS_DIR = (
+    Path(__file__).resolve().parent.parent.parent / "supabase" / "migrations"
+)
 
 TABLES = [
     "seasons",
