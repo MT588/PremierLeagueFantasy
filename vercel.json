@@ -1,0 +1,22 @@
+{
+  "services": {
+    "web": {
+      "root": "frontend/",
+      "framework": "nextjs"
+    },
+    "api": {
+      "root": "backend/",
+      "runtime": "python",
+      "entrypoint": "app.main:app",
+      "functions": {
+        "app/main.py": {
+          "maxDuration": 60
+        }
+      }
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": { "service": "api" } },
+    { "source": "/(.*)", "destination": { "service": "web" } }
+  ]
+}

@@ -120,8 +120,14 @@ Local setup: add `SUPABASE_URL` to `backend/.env`, and
 
 ## Deployment
 
-Frontend and backend deploy as two Vercel projects from this repo — see
+Live at **https://plfantasy.vercel.app**. Frontend and API deploy together as a
+single Vercel project using Vercel Services — `frontend/` serves the app and
+`backend/` serves `/api/*` from the same domain. See
 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). The data pipeline stays local.
+
+```bash
+vercel deploy --prod        # from the repo root
+```
 
 ## Tests
 

@@ -24,8 +24,18 @@ const requireSession = cache(async () => {
   return session;
 });
 
+/** Server-side fetch needs an absolute URL, so unlike the browser client this
+ *  cannot use a relative path. On Vercel the API lives in the same deployment,
+ *  so VERCEL_URL points at the right one for previews as well as production. */
+function baseUrl(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return "http://localhost:8000";
+}
+
 export const api = createApi(
   async () => (await requireSession()).access_token,
   // The token verified above was rejected by the API, so the session is stale.
   () => redirect("/login"),
+  baseUrl(),
 );

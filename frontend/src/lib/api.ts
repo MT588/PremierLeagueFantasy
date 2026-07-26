@@ -1,4 +1,6 @@
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+/** Where the FastAPI service lives. On Vercel the API is served from the same
+ *  domain as the frontend, so the browser can use relative URLs and no CORS is
+ *  involved; api.client.ts and api.server.ts each pass what they need. */
 
 export interface Meta {
   season: string;
@@ -189,10 +191,14 @@ type GetToken = (opts: { forceRefresh: boolean }) => Promise<string | null>;
  *  in different ways on the server (cookies) than in the browser (session
  *  storage). Both entry points build a client from this factory: see
  *  api.server.ts and api.client.ts. */
-export function createApi(getToken: GetToken, onUnauthorized: () => void) {
+export function createApi(
+  getToken: GetToken,
+  onUnauthorized: () => void,
+  baseUrl: string,
+) {
   async function get<T>(path: string, retried = false): Promise<T> {
     const token = await getToken({ forceRefresh: retried });
-    const res = await fetch(`${API}${path}`, {
+    const res = await fetch(`${baseUrl}${path}`, {
       cache: "no-store",
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });

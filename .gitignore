@@ -1,5 +1,7 @@
-# env / secrets
+# env / secrets. .env.example is the tracked template, so keep it out of the glob.
 .env
+.env*
+!.env.example
 *.env.local
 
 # python
@@ -20,3 +22,4 @@ out/
 
 # misc
 .DS_Store
+.vercel

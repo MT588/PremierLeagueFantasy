@@ -1,0 +1,14 @@
+# Keeping pyproject.toml and uv.lock out of the upload forces Vercel to install
+# from backend/requirements.txt (the API-only dependency set) rather than
+# resolving the full ML dependency tree, which would exceed the function size
+# limit. Nothing under backend/app or backend/optimizer imports ml/ or pipeline/.
+backend/pyproject.toml
+backend/uv.lock
+backend/.venv/
+backend/ml/
+backend/pipeline/
+backend/data/
+backend/tests/
+backend/.pytest_cache/
+backend/.ruff_cache/
+**/__pycache__/
