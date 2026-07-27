@@ -255,8 +255,13 @@ saves or clean-sheet component, not the arithmetic.
   32 line-up slots, both scorers surviving the `|goals1=`/`|goals2=` boundary,
   own goals not credited, and the health probe rejecting a partial parse.
 
-Whole suite: **80 tests pass**. The two feature suites rebuild the training frame
-repeatedly and take ~13 minutes; everything else runs in about a minute.
+Whole suite: **59 tests pass** (27 existing + 32 new). The two feature suites
+rebuild the training frame repeatedly and take ~13 minutes; the other 48 run in
+about a minute:
+
+```bash
+uv run pytest --ignore=tests/test_features_v2.py --ignore=tests/test_features_v3.py
+```
 
 **Phase D — API and web app**
 - `app/schemas.py`: `PlayerStats` and `PredictionOut` carry `p_blank`,
