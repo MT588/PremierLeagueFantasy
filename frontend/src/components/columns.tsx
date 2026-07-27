@@ -116,6 +116,53 @@ export const pStartCol: Col = {
   render: (p) => (p.p_start === null ? "—" : `${Math.round(p.p_start * 100)}%`),
 };
 
+const pct = (v: number | null) => (v === null ? "—" : `${Math.round(v * 100)}%`);
+
+/** v3 distributional columns. The model predicts a distribution per player, not
+ *  just a mean, and these are the parts of it a manager actually decides on:
+ *  two players on the same expected points are not interchangeable if one is a
+ *  steady six and the other is a two-or-fifteen. Null on rows a pre-v3 model
+ *  wrote, so every one of these renders an em dash rather than a zero. */
+export const haulCol: Col = {
+  key: "p_haul",
+  label: "Haul %",
+  numeric: true,
+  render: (p) => pct(p.p_haul),
+};
+
+export const returnCol: Col = {
+  key: "p_return",
+  label: "Return %",
+  numeric: true,
+  optional: true,
+  render: (p) => pct(p.p_return),
+};
+
+export const blankCol: Col = {
+  key: "p_blank",
+  label: "Blank %",
+  numeric: true,
+  optional: true,
+  render: (p) => pct(p.p_blank),
+};
+
+/** The ceiling: a tenth of weeks come in at or above this. */
+export const p90Col: Col = {
+  key: "p90",
+  label: "Ceiling",
+  numeric: true,
+  render: (p) => fmt(p.p90, 0),
+};
+
+/** The floor, and the reason a high mean is not automatically a safe pick. */
+export const p10Col: Col = {
+  key: "p10",
+  label: "Floor",
+  numeric: true,
+  optional: true,
+  render: (p) => fmt(p.p10, 0),
+};
+
 /** Players the model has ruled out of the next match are noise in every
  *  ranking view, so each table drops them before filtering. */
 export const isAvailable = (p: PlayerStats) => p.chance_of_playing !== 0;

@@ -5,8 +5,71 @@ import { fmtPrice, POSITIONS } from "@/lib/ui";
 import { Card, FdrChip, RatingBadge, StatusBadge } from "@/components/ui";
 import PointsChart from "@/components/PointsChart";
 
+const COMPONENT_LABELS: Record<string, string> = {
+  appearance: "Turning up",
+  goals: "Goal threat",
+  assists: "Creativity",
+  clean_sheet: "Clean sheet",
+  saves: "Saves",
+  defensive: "Defensive actions",
+  bonus: "Bonus",
+  cards: "Cards",
+};
+
+/** A bar per contribution, shared by both driver shapes. */
+function ContributionBar({
+  label,
+  value,
+  maxAbs,
+}: {
+  label: string;
+  value: number;
+  maxAbs: number;
+}) {
+  const up = value > 0;
+  return (
+    <li className="text-xs">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="truncate text-ink-2">{label}</span>
+        <span
+          className={`shrink-0 tabular-nums ${up ? "text-[#1E5C36]" : "text-[#8A2E20]"}`}
+        >
+          {up ? "+" : ""}
+          {value.toFixed(2)}
+        </span>
+      </div>
+      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-page">
+        <div
+          className={`h-full rounded-full ${up ? "bg-[#3E8E5A]" : "bg-[#C0392B]"}`}
+          style={{ width: `${(Math.abs(value) / maxAbs) * 100}%` }}
+        />
+      </div>
+    </li>
+  );
+}
+
+/** v3 explains a prediction as the sum it actually is — points priced per part
+ *  of the game — where v2 could only offer SHAP attributions over 76 features.
+ *  Both shapes are rendered because predictions written by either model version
+ *  can still be in the table. */
 function DriversPanel({ drivers }: { drivers: PredictionDrivers }) {
-  const maxAbs = Math.max(...drivers.top.map((d) => Math.abs(d.contribution)), 0.01);
+  const components = drivers.components ?? [];
+  const isV3 = components.length > 0;
+  const rows = isV3
+    ? components.map((c) => ({
+        key: c.name,
+        label: COMPONENT_LABELS[c.name] ?? c.name,
+        value: c.points,
+      }))
+    : (drivers.top ?? []).map((d) => ({
+        key: d.feature,
+        label: d.label,
+        value: d.contribution,
+      }));
+
+  if (rows.length === 0) return null;
+  const maxAbs = Math.max(...rows.map((r) => Math.abs(r.value)), 0.01);
+
   return (
     <Card title="What drives this prediction">
       {drivers.gated && (
@@ -29,32 +92,14 @@ function DriversPanel({ drivers }: { drivers: PredictionDrivers }) {
         </span>
       </div>
       <ul className="space-y-2">
-        {drivers.top.map((d) => {
-          const up = d.contribution > 0;
-          const width = (Math.abs(d.contribution) / maxAbs) * 100;
-          return (
-            <li key={d.feature} className="text-xs">
-              <div className="flex items-baseline justify-between gap-2">
-                <span className="truncate text-ink-2">{d.label}</span>
-                <span
-                  className={`shrink-0 tabular-nums ${up ? "text-[#1E5C36]" : "text-[#8A2E20]"}`}
-                >
-                  {up ? "+" : ""}
-                  {d.contribution.toFixed(2)}
-                </span>
-              </div>
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-page">
-                <div
-                  className={`h-full rounded-full ${up ? "bg-[#3E8E5A]" : "bg-[#C0392B]"}`}
-                  style={{ width: `${width}%` }}
-                />
-              </div>
-            </li>
-          );
-        })}
+        {rows.map((r) => (
+          <ContributionBar key={r.key} label={r.label} value={r.value} maxAbs={maxAbs} />
+        ))}
       </ul>
       <p className="mt-3 text-[11px] text-ink-3">
-        Contribution of each input to the points-if-starting estimate (model SHAP values).
+        {isV3
+          ? "Where the points come from, priced by the official scoring rules."
+          : "Contribution of each input to the points-if-starting estimate (model SHAP values)."}
       </p>
     </Card>
   );

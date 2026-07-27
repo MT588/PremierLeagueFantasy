@@ -42,6 +42,16 @@ class PlayerStats(BaseModel):
     rating: str | None
     p_start: float | None
 
+    # v3 distributional outputs. Null on rows a pre-v3 model_version wrote, so
+    # the tables have to tolerate a missing column rather than assume zero.
+    p_blank: float | None = None
+    p_return: float | None = None
+    p_haul: float | None = None
+    p10: float | None = None
+    p50: float | None = None
+    p90: float | None = None
+    upside: float | None = None
+
     # Season columns come from `stat_season` — the latest season with real rows,
     # which pre-season is last season.
     stat_season: str | None
@@ -121,6 +131,17 @@ class PredictionOut(BaseModel):
     rating: str | None
     p_start: float | None = None
     drivers: dict | None = None
+
+    # v3: the shape of the week, not just its mean. `components` is the
+    # per-component points breakdown that replaced v2's SHAP attributions.
+    p_blank: float | None = None
+    p_return: float | None = None
+    p_haul: float | None = None
+    p10: float | None = None
+    p50: float | None = None
+    p90: float | None = None
+    upside: float | None = None
+    components: list[dict] | dict | None = None
 
 
 class PlayerDetail(BaseModel):

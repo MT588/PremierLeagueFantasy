@@ -1,0 +1,170 @@
+{{Football box
+|date={{Start date|2026|7|4}}
+|time=12:00&nbsp;p.m. [[UTC−05:00|UTC−5]]
+|team1={{#invoke:flag|fb-rt|CAN}}
+|score={{score link|2026 FIFA World Cup knockout stage#Canada vs Morocco|0–3}}
+|team2={{#invoke:flag|fb|MAR}}
+|goals1=
+|goals2=
+*[[Azzedine Ounahi|Ounahi]] 50', 82'
+*[[Soufiane Rahimi|Rahimi]] 90+8'
+|stadium=[[NRG Stadium]], [[Houston]]
+|attendance=68,777
+|referee=[[Michael Oliver (referee)|Michael Oliver]] ([[The Football Association|England]])
+|report=<ref group="Report">{{multiref
+ | [https://www.fifa.com/en/match-centre/match/17/285023/289288/400021530 "Canada vs Morocco {{!}} Round of 16 {{!}} FIFA World Cup 2026"]. FIFA. Retrieved July 4, 2026.
+ | [https://fdp.fifa.org/assetspublic/ce281/r12539/pdf/FullTimeMatchReport-English.pdf "Match Report – Round of 16 – Canada v. Morocco"]. FIFA. July 4, 2026. Retrieved July 4, 2026.
+ | [https://www.fifatrainingcentre.com/media/native/tournaments/fifa-world-cup/2026/PMSR-M90-CAN-V-MAR.pdf "Post match summary report – Round of 16 – Canada v. Morocco"]. FIFA. July 4, 2026. Retrieved July 6, 2026. }}</ref>
+}}<section end="R16-1" />
+{| width=92%
+|-
+|{{Football kit
+ |pattern_la = _can26t
+ |pattern_b  = _can26t
+ |pattern_ra = _can26t
+ |pattern_sh = _can26t
+ |pattern_so = 
+ |leftarm    = 
+ |body       = 
+ |rightarm   = 
+ |shorts     = 
+ |socks      = 000000
+ |title      = Canada<ref name="CAN-MAR line-ups">{{cite web |url=https://fdp.fifa.org/assetspublic/ce281/r12539/pdf/TacticalLineup-English.pdf |title=Tactical Line-up – Round of 16 – Canada v. Morocco |publisher=[[FIFA]] |date=July 4, 2026 |access-date=July 4, 2026}}</ref>
+}}
+|{{Football kit
+ |pattern_la = _mrc26a
+ |pattern_b  = _mrc26a
+ |pattern_ra = _mrc26a
+ |pattern_sh = _mrc26a
+ |pattern_so = _mrc26al
+ |leftarm    = 
+ |body       = 
+ |rightarm   = 
+ |shorts     = 
+ |socks      = 
+ |title      = Morocco<ref name="CAN-MAR line-ups"/>
+}}
+|}
+
+{| width="100%"
+|valign="top" width="40%"|
+{| style="font-size:90%" cellspacing="0" cellpadding="0"
+|-
+!width=25| !!width=25|
+|-
+|GK ||'''16'''||[[Maxime Crépeau]]
+|-
+|RB ||'''2''' ||[[Alistair Johnston]]
+|-
+|CB ||'''15'''||[[Moïse Bombito]]
+|-
+|CB ||'''4''' ||[[Luc de Fougerolles]] || {{yel|49}}
+|-
+|LB ||'''22'''||[[Richie Laryea]] || {{yel|40}} || {{suboff|78}}
+|-
+|RM ||'''17'''||[[Tajon Buchanan]] || || {{suboff|87}}
+|-
+|CM ||'''23'''||[[Niko Sigur]] || || {{suboff|87}}
+|-
+|CM ||'''7''' ||[[Stephen Eustáquio]] ([[Captain (association football)|c]])
+|-
+|LM ||'''20'''||[[Ali Ahmed (soccer)|Ali Ahmed]] || || {{suboff|78}}
+|-
+|CF ||'''10'''||[[Jonathan David]] || {{yel|43}}
+|-
+|CF ||'''12'''||[[Tani Oluwaseyi]] || || {{suboff|63}}
+|-
+|colspan=3|'''Substitutions:'''
+|-
+|FW ||'''9''' ||[[Cyle Larin]] || {{yel|67}} || {{subon|63}}
+|-
+|FW ||'''24'''||[[Promise David]] || || {{subon|78}}
+|-
+|MF ||'''14'''||[[Jacob Shaffelburg]] || || {{subon|78}}
+|-
+|FW ||'''26'''||[[Jayden Nelson]] || || {{subon|87}}
+|-
+|MF ||'''21'''||[[Jonathan Osorio]] || || {{subon|87}}
+|-
+|colspan=3|'''Manager:'''
+|-
+|colspan=3|{{flagicon|USA}} [[Jesse Marsch]]
+|}
+|valign="top"|[[File:CAN-MAR 2026-07-04.svg|300px]]
+|valign="top" width="50%"|
+{| style="font-size:90%; margin:auto" cellspacing="0" cellpadding="0"
+|-
+!width=25| !!width=25|
+|-
+|GK ||'''1''' ||[[Yassine Bounou]]
+|-
+|RB ||'''2''' ||[[Achraf Hakimi]] ([[Captain (association football)|c]]) || {{yel|40}}
+|-
+|CB ||'''14'''||[[Issa Diop (footballer)|Issa Diop]] || || {{suboff|87}}
+|-
+|CB ||'''25'''||[[Redouane Halhal]] || {{yel|20}}
+|-
+|LB ||'''3''' ||[[Noussair Mazraoui]]
+|-
+|CM ||'''6''' ||[[Ayyoub Bouaddi]] || || {{suboff|63}}
+|-
+|CM ||'''24'''||[[Neil El Aynaoui]]
+|-
+|RW ||'''10'''||[[Brahim Díaz]]
+|-
+|AM ||'''8''' ||[[Azzedine Ounahi]] || {{yel|45}} || {{suboff|87}}
+|-
+|LW ||'''23'''||[[Bilal El Khannouss]] || {{yel|45+6}} || {{suboff|63}}
+|-
+|CF ||'''11'''||[[Ismael Saibari]] || || {{suboff|22}}
+|-
+|colspan=3|'''Substitutions:'''
+|-
+|FW ||'''9''' ||[[Soufiane Rahimi]] || || {{subon|22}}
+|-
+|MF ||'''7''' ||[[Chemsdine Talbi]] || || {{subon|63}}
+|-
+|MF ||'''4''' ||[[Sofyan Amrabat]] || || {{subon|63}}
+|-
+|DF ||'''5''' ||[[Marwane Saâdane]] || || {{subon|87}}
+|-
+|MF ||'''15'''||[[Samir El Mourabet]] || || {{subon|87}}
+|-
+|colspan=3|'''Manager:'''
+|-
+|colspan=3|[[Mohamed Ouahbi]]
+|}
+|}
+
+{| style="width:100%; font-size:90%;"
+|
+'''Man of the Match:'''
+<br />[[Azzedine Ounahi]] (Morocco)<ref name="MOTM">{{cite web |url=https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/michelob-ultra-superior-player-of-match-winner |title=Michelob Ultra Superior Player of the Match – every winner |publisher=[[FIFA]] |date=June 29, 2026 |access-date=July 11, 2026}}</ref>
+
+'''[[Assistant referee (association football)|Assistant referees]]:'''<ref name="CAN-MAR line-ups"/>
+<br />[[Stuart Burt]] ([[The Football Association|England]])
+<br />James Mainwaring ([[The Football Association|England]])
+<br />'''[[Assistant referee (association football)#Fourth official|Fourth official]]:'''
+<br />[[Danny Makkelie]] ([[Royal Dutch Football Association|Netherlands]])
+<br />'''[[Assistant referee (association football)#Reserve assistant referee|Reserve assistant referee]]:'''
+<br />Hessel Steegstra ([[Royal Dutch Football Association|Netherlands]])
+<br />'''[[Video assistant referee]]:'''
+<br />[[Jarred Gillett]] ([[The Football Association|England]])
+<br />'''[[Video assistant referee#Assistant video assistant referee|Assistant video assistant referee]]:'''
+<br />[[Dennis Higler]] ([[Royal Dutch Football Association|Netherlands]])
+<br />'''[[Video assistant referee#Support video assistant referee|Support video assistant referee]]:'''
+<br />{{ill|Tomasz Kwiatkowski|pl|Tomasz Kwiatkowski (sędzia piłkarski)}} ([[Polish Football Association|Poland]])
+|}
+
+===Paraguay vs France===
+Paraguay had never defeated France in their five previous encounters, including two matches at the FIFA World Cup: a [[1958 FIFA World Cup Group 2#France vs Paraguay|7–3 group stage loss]] in [[1958 FIFA World Cup|1958]] and a [[1998 FIFA World Cup knockout_stage#France vs Paraguay|1–0 round of 16 defeat]] via [[golden goal]] at the [[1998 FIFA World Cup]] (which France hosted and current manager [[Didier Deschamps]] also played in). Their latest meeting was a 5–0 friendly in 2017.<ref>{{cite web|url=https://www.11v11.com/teams/paraguay/tab/opposingTeams/opposition/France/|title=Paraguay national football team: record v France|website=11v11.com|access-date=June 29, 2026}}</ref>
+
+The match was played in extreme heat, with temperatures up to {{cvt|38|C|F}} at kick-off time.<ref>{{cite web|url=https://www.bbc.com/sport/football/live/cdx7jwdy5ndt|title=Paraguay 0 France 1|date=6 July 2026|work=BBC Sport|accessdate=7 July 2026}}</ref>
+In the 70th minute, France was awarded a penalty after a VAR intervention when substitute [[Désiré Doué]] was fouled inside the box by [[Diego Gómez (Paraguayan footballer)|Diego Gómez]]. [[Kylian Mbappé]] scored a penalty with a low shot to the right corner, sending Paraguay goalkeeper [[Orlando Gill]] the wrong way.
+Paraguay committed 13 fouls to France's 11 during the game, but escaped without a single yellow card while France received three.<ref>{{cite web|url=https://www.theguardian.com/football/2026/jul/05/paraguay-france-last-16-world-cup-match-report|title= Mbappé and France ditch ‘tuxedos’ to play ‘dirty football’ and beat Paraguay|date=6 July 2026|work=Guardian|accessdate=7 July 2026}}</ref> Global media were almost unanimous in condemning the Paraguayan team's systematic foul play,<ref>[https://www.rfi.fr/fr/sports/20260706-football-dégoûtant-totalement-honteux-la-presse-internationale-étrille-le-paraguay-après-son-match-face-à-la-france "«Football dégoûtant», «totalement honteux»: la presse internationale étrille le Paraguay après son match face à la France"], [[Radio France internationale]], 6 July 2026</ref> as well as [[Ilgiz Tantashev]]'s poor refereeing.<ref>[https://www.franceinfo.fr/coupe-du-monde/je-n-avais-jamais-joue-un-match-comme-ca-avec-autant-de-coups-l-arbitrage-de-france-paraguay-au-centre-des-debats-a-la-coupe-du-monde-2026_8095031.html ""Je n'avais jamais joué un match avec autant de coups, de coups en traître" : l'arbitrage de France-Paraguay au centre des débats à la Coupe du monde"], [[France Info]], 5 July 2026</ref>
+ 
+Alongside the Canada vs Morocco match in Houston, a special ceremony commemorating the 250th anniversary of the United States Declaration of Independence was held on the stadium grounds 25 minutes before kickoff.<ref name="FIFA250" />
+
+After the match, Paraguayan Senator, [[Celeste Amarilla]], racially abused Mbappé on social media and the latter made a statement on X in response. Amarilla made a response which was not well received.<ref name="AmarillaGuardian2026">{{cite news |title='A despicable woman': Kylian Mbappé hits out at Paraguayan senator over racist attack |url=https://www.theguardian.com/football/2026/jul/06/a-despicable-women-kylian-mbappe-hits-out-at-paraguayan-senator-over-racist-attack |work=[[The Guardian]] |agency=[[Reuters]] |date=6 July 2026}}</ref><ref name="Geiger2026">{{cite news |last1=Geiger |first1=Chris |title=«Noix de coco», «chimpanzé»: une sénatrice se lâche contre Mbappé |url=https://www.20min.ch/fr/story/coupe-du-monde-2026-noix-de-coco-chimpanze-une-senatrice-se-lache-contre-mbappe-103597633 |access-date=6 July 2026 |work=[[20 minutes (France)|20 minutes]] |date=6 July 2026 |language=fr}}</ref><ref name="Peter2026">{{cite news |last=Peter |first=Mike |url=https://www.bbc.com/sport/football/articles/ckg557wxrzro |title=Mbappe condemns racist posts from Paraguay senator |publisher=[[BBC Sport]] |date=6 July 2026 }}</ref>
+
+<section begin="R16-2" />

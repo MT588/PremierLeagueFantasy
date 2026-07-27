@@ -325,6 +325,30 @@ def simulate(
     return out.set_index(keys).reset_index()
 
 
+def _thinned_conceded_points(pmf: np.ndarray, exposure: float) -> np.ndarray:
+    """E[floor(B / 2)] for B ~ Binomial(team goals conceded, `exposure`).
+
+    A substitute is only exposed to the goals let in while he is on the pitch, so
+    his share is thinned out of the team total *before* the every-second-goal
+    step. Thinning afterwards (thinning the points rather than the goals) is not
+    the same number: for a team that concedes two, a 30%-exposure substitute has
+    a 9% chance of being on for both, not 30% of a point.
+    """
+    from scipy.stats import binom
+
+    out = np.zeros(len(pmf))
+    for total in range(pmf.shape[1]):
+        conceded = np.arange(total + 1)
+        expected = float(
+            (
+                binom.pmf(conceded, total, exposure)
+                * (conceded // scoring.GOALS_CONCEDED_PER_POINT)
+            ).sum()
+        )
+        out += pmf[:, total] * expected
+    return out
+
+
 def analytic_ev(bundle: Bundle) -> np.ndarray:
     """Closed-form expected points, used to check the simulator.
 
@@ -356,22 +380,37 @@ def analytic_ev(bundle: Bundle) -> np.ndarray:
     p_cs = bundle.conceded_pmf[:, 0]
     ev = ev + lut(sc.clean_sheets) * p_cs * p_start
 
+    # Goals conceded and saves are step functions of a count, so each has to be
+    # evaluated *inside* a minutes class and then averaged by the class
+    # probabilities. Evaluating once at `exposure` — which already folds in
+    # P(play) — and multiplying by P(play) a second time shrinks the count before
+    # a convex step and underprices the result. It cost keepers about 0.12 points
+    # each while leaving every linear term untouched, so it showed up as v3
+    # ranking keepers below outfielders rather than as an obvious error.
     k = np.arange(bundle.conceded_pmf.shape[1])
-    conceded_points = (bundle.conceded_pmf * (k // scoring.GOALS_CONCEDED_PER_POINT)).sum(
+    conceded_full = (bundle.conceded_pmf * (k // scoring.GOALS_CONCEDED_PER_POINT)).sum(
         axis=1
     )
-    ev = ev + lut(sc.goals_conceded) * conceded_points * (p_start + p_cameo * cameo_exposure)
+    ev = ev + lut(sc.goals_conceded) * (
+        p_start * conceded_full
+        + p_cameo * _thinned_conceded_points(bundle.conceded_pmf, cameo_exposure)
+    )
 
     # saves pay per third save, so the mean is not enough
     from scipy.stats import poisson
 
-    save_mu = bundle.saves_rate * np.maximum(exposure, 1e-9)
     save_k = np.arange(0, 21)
-    save_points = (
-        poisson.pmf(save_k.reshape(1, -1), save_mu.reshape(-1, 1))
-        * (save_k // scoring.SAVES_PER_POINT)
-    ).sum(axis=1)
-    ev = ev + sc.saves * save_points * (p_start + p_cameo)
+
+    def save_points(class_exposure: float) -> np.ndarray:
+        mu = bundle.saves_rate * max(class_exposure, 1e-9)
+        return (
+            poisson.pmf(save_k.reshape(1, -1), mu.reshape(-1, 1))
+            * (save_k // scoring.SAVES_PER_POINT)
+        ).sum(axis=1)
+
+    ev = ev + sc.saves * (
+        p_start * save_points(start_exposure) + p_cameo * save_points(cameo_exposure)
+    )
 
     if sc.has_defensive_contribution:
         dc_scale_cameo = _dc_scale(
@@ -387,7 +426,14 @@ def analytic_ev(bundle: Bundle) -> np.ndarray:
     played = p_start + p_cameo
     ev = ev + sc.yellow_cards * bundle.p_yellow * played
     ev = ev + sc.red_cards * bundle.p_red * played
-    ev = ev + sc.bonus * bonus_expectation(bundle, exposure) * played
+    # Bonus turns on the returns drawn in the same appearance, and the rank
+    # bucket maps to bonus non-linearly, so it marginalises per minutes class
+    # for the same reason saves do.
+    rows = len(bundle.position)
+    ev = ev + sc.bonus * (
+        p_start * bonus_expectation(bundle, np.full(rows, start_exposure))
+        + p_cameo * bonus_expectation(bundle, np.full(rows, cameo_exposure))
+    )
     return ev
 
 

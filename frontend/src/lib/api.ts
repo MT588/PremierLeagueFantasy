@@ -58,7 +58,17 @@ export interface PredictionDrivers {
   p_cameo: number;
   expected_if_start: number;
   gated?: boolean;
-  top: PredictionDriver[];
+  /** v2: SHAP feature attributions. */
+  top?: PredictionDriver[];
+  /** v3: the priced component breakdown that replaced them. */
+  components?: PredictionComponent[];
+}
+
+/** One line of the v3 breakdown: how many of the predicted points come from
+ *  this part of the game. Replaces v2's SHAP feature attributions. */
+export interface PredictionComponent {
+  name: string;
+  points: number;
 }
 
 export interface PlayerPrediction {
@@ -67,6 +77,16 @@ export interface PlayerPrediction {
   rating: string | null;
   p_start: number | null;
   drivers: PredictionDrivers | null;
+
+  /** v3 distributional outputs; null on predictions written by v1/v2. */
+  p_blank: number | null;
+  p_return: number | null;
+  p_haul: number | null;
+  p10: number | null;
+  p50: number | null;
+  p90: number | null;
+  upside: number | null;
+  components: PredictionComponent[] | null;
 }
 
 export interface PlayerDetail {
@@ -135,6 +155,15 @@ export interface PlayerStats {
   predicted_points: number | null;
   rating: string | null;
   p_start: number | null;
+
+  /** v3 distributional outputs; null on predictions written by v1/v2. */
+  p_blank: number | null;
+  p_return: number | null;
+  p_haul: number | null;
+  p10: number | null;
+  p50: number | null;
+  p90: number | null;
+  upside: number | null;
 
   /** Which season the season-scoped columns below come from. Before a season
    *  kicks off this is last season. */

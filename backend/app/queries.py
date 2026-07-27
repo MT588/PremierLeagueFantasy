@@ -75,7 +75,9 @@ limit 6
 """
 
 PLAYER_PREDICTIONS = """
-select gameweek, predicted_points, rating, p_start, drivers from predictions
+select gameweek, predicted_points, rating, p_start, drivers,
+       p_blank, p_return, p_haul, p10, p50, p90, upside, components
+from predictions
 where season_id = :season_id and player_code = :code
   and model_version = :model_version
 order by gameweek
@@ -173,6 +175,8 @@ select ps.player_code as code, p.web_name,
        ps.position, ps.team_code, t.short_name as team_short,
        ps.now_cost / 10.0 as price, ps.status, ps.chance_of_playing, ps.news,
        pr.predicted_points, pr.rating, pr.p_start,
+       -- v3 distributional outputs; null for rows written by v1/v2
+       pr.p_blank, pr.p_return, pr.p_haul, pr.p10, pr.p50, pr.p90, pr.upside,
        sa.stat_season,
        coalesce(sa.s_points, 0) as total_points,
        coalesce(sa.s_minutes, 0) as minutes,
