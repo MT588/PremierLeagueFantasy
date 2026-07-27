@@ -168,11 +168,31 @@ class SquadPlayer(BaseModel):
     is_captain: bool
 
 
-class OptimalTeamOut(BaseModel):
+class TransferPlayer(BaseModel):
+    code: int
+    web_name: str
+    position: int
+    team_short: str | None
+    price: float
+
+
+class GameweekPlanOut(BaseModel):
+    gameweek: int
     starting_xi: list[SquadPlayer]
     bench: list[SquadPlayer]
+    # Ordered by position and equal in length, so index i of each is one swap.
+    transfers_in: list[TransferPlayer]
+    transfers_out: list[TransferPlayer]
+    bank_before: int | None  # free transfers available; null in the first week
+    bank_after: int | None
+    transfers_used: int
+    expected_points: float  # XI + captain, this week only
     total_cost: float
-    expected_points: float
+
+
+class OptimalPlanOut(BaseModel):
+    weeks: list[GameweekPlanOut]
+    total_expected_points: float
     budget: float
     horizon: int
     gameweeks: list[int]

@@ -255,10 +255,14 @@ where ts.season_id = :season_id
 order by t.name
 """
 
-OPTIMIZER_CANDIDATES = """
+# One row per (player, gameweek): the planner needs each week's points on its
+# own, not the horizon total, to decide when to start and when to sell someone.
+# A player with no prediction row for a week simply has no row here; the
+# optimizer reads that as zero.
+OPTIMIZER_CANDIDATES_BY_GW = """
 select ps.player_code, ps.position, ps.team_code, ps.now_cost as cost,
        p.web_name, t.short_name as team_short,
-       coalesce(sum(pr.predicted_points), 0) as predicted_points
+       pr.gameweek, pr.predicted_points
 from player_seasons ps
 join players p on p.code = ps.player_code
 left join teams t on t.code = ps.team_code
@@ -266,5 +270,5 @@ join predictions pr on pr.season_id = ps.season_id and pr.player_code = ps.playe
 where ps.season_id = :season_id and pr.gameweek = any(:gameweeks)
   and pr.model_version = :model_version
   and ps.status = 'a' and ps.team_code is not null
-group by ps.player_code, ps.position, ps.team_code, ps.now_cost, p.web_name, t.short_name
+order by ps.player_code, pr.gameweek
 """

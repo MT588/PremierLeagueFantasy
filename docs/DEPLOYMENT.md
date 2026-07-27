@@ -171,9 +171,12 @@ JSON.parse(
   Vercel truncates the project name in generated URLs
   (`plfantasy-<hash>-<scope>.vercel.app`), which a naive regex will miss.
 - **PuLP/CBC in serverless.** `/api/optimal-team` solves an ILP using PuLP's
-  bundled CBC binary, with `maxDuration` raised to 60s. If it proves
-  unreliable, switch [`optimizer/ilp.py`](../backend/optimizer/ilp.py) to the
-  HiGHS solver (`highspy`, a pure wheel with no external binary).
+  bundled CBC binary, with `maxDuration` raised to 60s. A five-gameweek plan
+  takes a few seconds locally; the solver is capped by `SOLVER_TIME_LIMIT` in
+  [`optimizer/multi_period.py`](../backend/optimizer/multi_period.py) and falls
+  back to the best plan found so far if it runs out of time. If CBC proves
+  unreliable, switch to the HiGHS solver (`highspy`, a pure wheel with no
+  external binary).
 - **The data pipeline stays local.** `backend/pipeline/` and `backend/ml/` are
   excluded from the deployment; the weekly refresh still runs from your machine
   and writes to Supabase over `DATABASE_URL`.

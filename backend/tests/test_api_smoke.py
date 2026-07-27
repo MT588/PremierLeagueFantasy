@@ -64,16 +64,33 @@ def test_predictions():
     assert rows[0]["predicted_points"] >= rows[-1]["predicted_points"]
 
 
-@pytest.mark.parametrize("budget,horizon", [(100.0, 1), (85.0, 3)])
+@pytest.mark.parametrize("budget,horizon", [(100.0, 1), (85.0, 3), (100.0, 5)])
 def test_optimal_team(budget, horizon):
     r = client.get("/api/optimal-team", params={"budget": budget, "horizon": horizon})
     assert r.status_code == 200
     body = r.json()
     assert not body["infeasible"]
-    assert len(body["starting_xi"]) == 11
-    assert len(body["bench"]) == 4
-    assert body["total_cost"] <= budget
-    assert sum(1 for p in body["starting_xi"] if p["is_captain"]) == 1
-    positions = [p["position"] for p in body["starting_xi"]]
-    assert positions.count(1) == 1
-    assert positions.count(2) >= 3
+    # Short of the ask only if predictions don't reach that far.
+    assert 0 < len(body["weeks"]) <= horizon
+    assert len(body["weeks"]) == body["horizon"]
+    assert [w["gameweek"] for w in body["weeks"]] == body["gameweeks"]
+    assert body["total_expected_points"] == pytest.approx(
+        sum(w["expected_points"] for w in body["weeks"]), abs=0.01
+    )
+
+    for i, week in enumerate(body["weeks"]):
+        assert len(week["starting_xi"]) == 11
+        assert len(week["bench"]) == 4
+        assert week["total_cost"] <= budget
+        assert sum(1 for p in week["starting_xi"] if p["is_captain"]) == 1
+        positions = [p["position"] for p in week["starting_xi"]]
+        assert positions.count(1) == 1
+        assert positions.count(2) >= 3
+
+        assert len(week["transfers_in"]) == len(week["transfers_out"])
+        if i == 0:
+            # The opening squad is a free pick, so nothing is transferred yet.
+            assert week["bank_before"] is None and week["transfers_used"] == 0
+        else:
+            assert week["transfers_used"] <= week["bank_before"]
+            assert week["bank_after"] == week["bank_before"] - week["transfers_used"]

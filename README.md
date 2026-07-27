@@ -45,9 +45,18 @@ supabase/   SQL migrations (plain Postgres, works on Supabase or local)
   v1 (single-stage) and v2 (two-stage) remain runnable as comparison baselines;
   predictions are keyed by `model_version`, so switching generations is a
   one-line change in `backend/app/constants.py`.
-- **Optimizer**: PuLP/CBC integer program — 15-man squad, starting XI, captain
-  and bench under budget, 2-5-5-3 squad shape, max 3 per club and a legal
-  formation, maximizing predicted points over a 1–5 gameweek horizon.
+- **Optimizer**: PuLP/CBC integer program over a 1–10 gameweek horizon (default
+  5). It picks the opening 15-man squad under budget, 2-5-5-3 squad shape, max 3
+  per club and a legal formation, then plans each following week: the starting
+  XI and captain are re-picked for free, transfers come out of the free
+  allowance (one a gameweek, banked up to five, no points hits). Only the XI and
+  the captain double score, and a small bonus on banked transfers makes the plan
+  save them up for a batch rather than spend one every week.
+
+  The horizon is capped by how far predictions reach — plan over ten gameweeks
+  and `ml.predict_v3 --horizon 10` has to have been run, otherwise the endpoint
+  plans over the weeks it has. Cost scales steeply with length: five gameweeks
+  solve in a few seconds, ten take about half a minute.
 
 ## Setup
 
@@ -69,7 +78,7 @@ uv run python -m pipeline.run_pipeline --init --all
 # 4. train + predict (v3: components, distribution, walk-forward eval)
 uv run python -m ml.elo_prob                       # fits the Elo->probability map first
 uv run python -m ml.train_v3                       # per-fold report, acceptance gate, artifacts
-uv run python -m ml.predict_v3 --horizon 5         # predictions + distribution + drivers
+uv run python -m ml.predict_v3 --horizon 10        # predictions + distribution + drivers
 
 # 5. run the API
 uv run uvicorn app.main:app --port 8000
@@ -104,7 +113,7 @@ echo 'DATABASE_URL=postgres://postgres.<ref>:<password>@<host>:5432/postgres' > 
 uv run python -m pipeline.run_pipeline --init --all   # schema + all data sources
 uv run python -m ml.elo_prob                          # Elo->probability calibration
 uv run python -m ml.train_v3                          # train/evaluate the component model
-uv run python -m ml.predict_v3 --horizon 5            # write v3 predictions + drivers
+uv run python -m ml.predict_v3 --horizon 10           # write v3 predictions + drivers
 ```
 
 `ml/artifacts/` and `data/raw/` are gitignored, so after a clean checkout these
@@ -121,7 +130,7 @@ connects with database credentials) can read the tables.
 ```bash
 cd backend
 uv run python -m pipeline.run_pipeline --live      # new results, prices, flags
-uv run python -m ml.predict_v3 --horizon 5         # refresh v3 predictions
+uv run python -m ml.predict_v3 --horizon 10        # refresh v3 predictions
 ```
 
 Retrain (`uv run python -m ml.train_v3`) occasionally — e.g. monthly — so the
@@ -183,5 +192,5 @@ uv run pytest --ignore=tests/test_features_v2.py --ignore=tests/test_features_v3
 ## API
 
 `GET /api/meta`, `/api/teams`, `/api/players`, `/api/players/{code}`,
-`/api/predictions?gameweek=`, `/api/optimal-team?budget=100&horizon=3` —
+`/api/predictions?gameweek=`, `/api/optimal-team?budget=100&horizon=5` —
 interactive docs at `http://localhost:8000/docs`.

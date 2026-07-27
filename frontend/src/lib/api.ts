@@ -113,11 +113,31 @@ export interface SquadPlayer {
   is_captain: boolean;
 }
 
-export interface OptimalTeam {
+export interface TransferPlayer {
+  code: number;
+  web_name: string;
+  position: number;
+  team_short: string | null;
+  price: number;
+}
+
+export interface GameweekPlan {
+  gameweek: number;
   starting_xi: SquadPlayer[];
   bench: SquadPlayer[];
-  total_cost: number;
+  // Equal length and both ordered by position, so index i of each is one swap.
+  transfers_in: TransferPlayer[];
+  transfers_out: TransferPlayer[];
+  bank_before: number | null;
+  bank_after: number | null;
+  transfers_used: number;
   expected_points: number;
+  total_cost: number;
+}
+
+export interface OptimalPlan {
+  weeks: GameweekPlan[];
+  total_expected_points: number;
   budget: number;
   horizon: number;
   gameweeks: number[];
@@ -264,7 +284,7 @@ export function createApi(
     predictions: (params: Record<string, string> = {}) =>
       get<Record<string, unknown>[]>(`/api/predictions?${new URLSearchParams(params)}`),
     optimalTeam: (budget: number, horizon: number) =>
-      get<OptimalTeam>(`/api/optimal-team?budget=${budget}&horizon=${horizon}`),
+      get<OptimalPlan>(`/api/optimal-team?budget=${budget}&horizon=${horizon}`),
   };
 }
 
