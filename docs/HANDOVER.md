@@ -321,16 +321,35 @@ All optional. Nothing here blocks the season opener.
    an end-to-end API check all pass, but no one has looked at the rendered
    captaincy table with the five new columns on a real viewport.
 2. **`docs/ablation_v3.md`** was regenerated across all four folds this session
-   (`uv run python -m ml.ablation_v3 --draws 400`, ~35 min). If the feature pool
-   changes, re-run it — the point of the four-fold table is that a group which
+   (`uv run python -m ml.ablation_v3 --draws 400`). Budget **~2 hours**, not the
+   35 minutes the previous handover estimated — each configuration retrains v2
+   inside `evaluate_fold` as well as all seven v3 components. If the feature pool
+   changes, re-run it: the point of the four-fold table is that a group which
    only helps once is visible as such.
-3. **The rank-correlation gap is real and unexplained.** v3 trails v2 by
-   0.0005–0.0035 on every fold. Ruled out already: feature-group selection, model
-   capacity (31/63/127 leaves), the training exposure floor, bonus resolution,
-   Monte-Carlo resolution, and (this session) the analytic-EV bias. The remaining
-   untested lever is the clean-sheet component's ranking contribution —
-   substituting the observed clean sheet for the modelled probability would bound
-   how much of the gap sits there, in one fold run.
+3. **The rank-correlation gap is explained — it is the Understat group, and it
+   is a trade rather than a bug.** The four-fold ablation settles the question
+   the previous handover left open. On the acceptance fold:
+
+   | config | n | rho | MAE | Brier |
+   |---|---|---|---|---|
+   | shipped (`+ manager`) | 90 | 0.7168 | **0.9512** | **0.01640** |
+   | `all - understat` | 88 | **0.7201** | 0.9673 | 0.01691 |
+   | `base (form+meta)` | 33 | **0.7202** | 0.9669 | 0.01693 |
+   | v2 | — | 0.7202 | 0.9575 | 0.01687 |
+
+   Dropping Understat recovers rank correlation to 0.7201 — v2's number, near
+   exactly — on every fold, not just this one. But it costs 0.016 of MAE and
+   0.0005 of Brier, which surrenders *both* of v3's remaining wins: at
+   `all - understat` the model is worse than v2 on MAE (0.9673 vs 0.9575) and on
+   calibration (0.01691 vs 0.01687). The bare `base` config reproduces v2's
+   metrics almost exactly, which is the tell — v2's rank correlation is simply
+   the few-features rank correlation.
+
+   So the shipped set buys a large MAE and calibration gain for ~0.003 of rho,
+   consistently across four folds. That is the trade the Spearman tolerance in
+   the gate exists to permit, and it is now measured rather than assumed. The
+   clean-sheet lever named in the previous handover no longer needs testing for
+   this purpose.
 4. **Keeper EV may be slightly high** now that the compensating arithmetic bug is
    gone — see the bug section. Worth a look at the saves rate model before GW1.
 5. **The `tournament` feature group** stays excluded until a second fold can learn

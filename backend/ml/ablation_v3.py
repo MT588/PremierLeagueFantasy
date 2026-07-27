@@ -151,7 +151,9 @@ def write_markdown(table: pd.DataFrame, folds) -> None:
             lines.append(f"| {config} | {n} | {values} |")
         lines.append("")
 
-    (DOCS / "ablation_v3.md").write_text("\n".join(lines) + "\n")
+    # Explicit UTF-8 — the default is the console codepage on Windows (cp1252),
+    # which wrote the title's em dash as a byte nothing else in the repo reads.
+    (DOCS / "ablation_v3.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     log.info("wrote %s", DOCS / "ablation_v3.md")
 
 

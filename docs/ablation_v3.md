@@ -1,4 +1,4 @@
-# Ablation — v3 components
+# Ablation â€” v3 components
 
 Per-fold so a group that only helps in one season cannot pass as a win.
 Scored on rank correlation and haul pricing as well as MAE: v3 exists to
@@ -6,97 +6,97 @@ price the tail, and MAE alone rewards shading toward the mean.
 
 ## Spearman per gameweek (higher is better)
 
-| config | n | 2025-26 |
-|---|---|---|
-| base (form+meta) | 33 | 0.7178 |
-| + form_eb | 47 | 0.7176 |
-| + career | 55 | 0.7180 |
-| + understat | 64 | 0.7142 |
-| + setpiece | 68 | 0.7141 |
-| + opponent | 76 | 0.7145 |
-| + market | 79 | 0.7141 |
-| + schedule | 86 | 0.7146 |
-| + manager | 90 | 0.7142 |
-| + tournament | 97 | 0.7149 |
-| all - form_eb | 83 | 0.7144 |
-| all - career | 89 | 0.7149 |
-| all - understat | 88 | 0.7178 |
-| all - setpiece | 93 | 0.7140 |
-| all - opponent | 89 | 0.7144 |
-| all - market | 94 | 0.7143 |
-| all - schedule | 90 | 0.7143 |
-| all - manager | 93 | 0.7145 |
-| all - tournament | 90 | 0.7142 |
+| config | n | 2023-24 | 2024-25 | 2025-26 | 2025-26 H2 |
+|---|---|---|---|---|---|
+| base (form+meta) | 33 | 0.6931 | 0.7094 | 0.7202 | 0.7230 |
+| + form_eb | 47 | 0.6934 | 0.7091 | 0.7197 | 0.7227 |
+| + career | 55 | 0.6938 | 0.7089 | 0.7194 | 0.7231 |
+| + understat | 64 | 0.6921 | 0.7083 | 0.7170 | 0.7219 |
+| + setpiece | 68 | 0.6923 | 0.7083 | 0.7169 | 0.7220 |
+| + opponent | 76 | 0.6921 | 0.7080 | 0.7179 | 0.7218 |
+| + market | 79 | 0.6919 | 0.7082 | 0.7168 | 0.7223 |
+| + schedule | 86 | 0.6919 | 0.7081 | 0.7167 | 0.7221 |
+| + manager | 90 | 0.6919 | 0.7081 | 0.7168 | 0.7218 |
+| + tournament | 97 | 0.6919 | 0.7081 | 0.7167 | 0.7220 |
+| all - form_eb | 83 | 0.6917 | 0.7083 | 0.7176 | 0.7219 |
+| all - career | 89 | 0.6919 | 0.7081 | 0.7169 | 0.7221 |
+| all - understat | 88 | 0.6937 | 0.7086 | 0.7201 | 0.7230 |
+| all - setpiece | 93 | 0.6917 | 0.7079 | 0.7167 | 0.7221 |
+| all - opponent | 89 | 0.6919 | 0.7081 | 0.7176 | 0.7221 |
+| all - market | 94 | 0.6921 | 0.7082 | 0.7169 | 0.7221 |
+| all - schedule | 90 | 0.6919 | 0.7081 | 0.7176 | 0.7217 |
+| all - manager | 93 | 0.6919 | 0.7081 | 0.7169 | 0.7222 |
+| all - tournament | 90 | 0.6919 | 0.7081 | 0.7168 | 0.7218 |
 
 ## MAE (lower is better)
 
-| config | n | 2025-26 |
-|---|---|---|
-| base (form+meta) | 33 | 0.9764 |
-| + form_eb | 47 | 0.9768 |
-| + career | 55 | 0.9803 |
-| + understat | 64 | 0.9622 |
-| + setpiece | 68 | 0.9581 |
-| + opponent | 76 | 0.9580 |
-| + market | 79 | 0.9595 |
-| + schedule | 86 | 0.9599 |
-| + manager | 90 | 0.9607 |
-| + tournament | 97 | 0.9598 |
-| all - form_eb | 83 | 0.9597 |
-| all - career | 89 | 0.9593 |
-| all - understat | 88 | 0.9786 |
-| all - setpiece | 93 | 0.9602 |
-| all - opponent | 89 | 0.9609 |
-| all - market | 94 | 0.9607 |
-| all - schedule | 90 | 0.9610 |
-| all - manager | 93 | 0.9608 |
-| all - tournament | 90 | 0.9607 |
+| config | n | 2023-24 | 2024-25 | 2025-26 | 2025-26 H2 |
+|---|---|---|---|---|---|
+| base (form+meta) | 33 | 0.9700 | 0.9933 | 0.9669 | 0.9316 |
+| + form_eb | 47 | 0.9717 | 0.9986 | 0.9662 | 0.9380 |
+| + career | 55 | 0.9755 | 1.0055 | 0.9705 | 0.9398 |
+| + understat | 64 | 0.9565 | 0.9777 | 0.9521 | 0.9287 |
+| + setpiece | 68 | 0.9561 | 0.9745 | 0.9516 | 0.9264 |
+| + opponent | 76 | 0.9546 | 0.9775 | 0.9478 | 0.9251 |
+| + market | 79 | 0.9588 | 0.9765 | 0.9496 | 0.9226 |
+| + schedule | 86 | 0.9549 | 0.9781 | 0.9512 | 0.9235 |
+| + manager | 90 | 0.9604 | 0.9776 | 0.9512 | 0.9266 |
+| + tournament | 97 | 0.9604 | 0.9776 | 0.9514 | 0.9268 |
+| all - form_eb | 83 | 0.9560 | 0.9772 | 0.9498 | 0.9217 |
+| all - career | 89 | 0.9592 | 0.9782 | 0.9503 | 0.9226 |
+| all - understat | 88 | 0.9760 | 1.0075 | 0.9673 | 0.9365 |
+| all - setpiece | 93 | 0.9572 | 0.9788 | 0.9530 | 0.9255 |
+| all - opponent | 89 | 0.9659 | 0.9769 | 0.9498 | 0.9245 |
+| all - market | 94 | 0.9599 | 0.9780 | 0.9510 | 0.9261 |
+| all - schedule | 90 | 0.9598 | 0.9780 | 0.9488 | 0.9265 |
+| all - manager | 93 | 0.9549 | 0.9781 | 0.9511 | 0.9235 |
+| all - tournament | 90 | 0.9604 | 0.9776 | 0.9512 | 0.9266 |
 
 ## MAE, gameweeks 1-8 (lower is better)
 
-| config | n | 2025-26 |
-|---|---|---|
-| base (form+meta) | 33 | 1.0798 |
-| + form_eb | 47 | 1.0746 |
-| + career | 55 | 1.0820 |
-| + understat | 64 | 1.0544 |
-| + setpiece | 68 | 1.0476 |
-| + opponent | 76 | 1.0495 |
-| + market | 79 | 1.0498 |
-| + schedule | 86 | 1.0515 |
-| + manager | 90 | 1.0504 |
-| + tournament | 97 | 1.0497 |
-| all - form_eb | 83 | 1.0517 |
-| all - career | 89 | 1.0471 |
-| all - understat | 88 | 1.0757 |
-| all - setpiece | 93 | 1.0505 |
-| all - opponent | 89 | 1.0527 |
-| all - market | 94 | 1.0504 |
-| all - schedule | 90 | 1.0506 |
-| all - manager | 93 | 1.0502 |
-| all - tournament | 90 | 1.0504 |
+| config | n | 2023-24 | 2024-25 | 2025-26 |
+|---|---|---|---|---|
+| base (form+meta) | 33 | 1.0614 | 1.0741 | 1.0670 |
+| + form_eb | 47 | 1.0554 | 1.0719 | 1.0633 |
+| + career | 55 | 1.0594 | 1.0783 | 1.0693 |
+| + understat | 64 | 1.0394 | 1.0516 | 1.0437 |
+| + setpiece | 68 | 1.0381 | 1.0465 | 1.0414 |
+| + opponent | 76 | 1.0364 | 1.0542 | 1.0391 |
+| + market | 79 | 1.0419 | 1.0513 | 1.0400 |
+| + schedule | 86 | 1.0381 | 1.0506 | 1.0409 |
+| + manager | 90 | 1.0437 | 1.0510 | 1.0412 |
+| + tournament | 97 | 1.0437 | 1.0510 | 1.0410 |
+| all - form_eb | 83 | 1.0425 | 1.0526 | 1.0409 |
+| all - career | 89 | 1.0400 | 1.0505 | 1.0392 |
+| all - understat | 88 | 1.0600 | 1.0809 | 1.0631 |
+| all - setpiece | 93 | 1.0419 | 1.0541 | 1.0442 |
+| all - opponent | 89 | 1.0519 | 1.0497 | 1.0389 |
+| all - market | 94 | 1.0437 | 1.0528 | 1.0420 |
+| all - schedule | 90 | 1.0432 | 1.0532 | 1.0386 |
+| all - manager | 93 | 1.0381 | 1.0506 | 1.0410 |
+| all - tournament | 90 | 1.0437 | 1.0510 | 1.0412 |
 
 ## P(haul) Brier (lower is better)
 
-| config | n | 2025-26 |
-|---|---|---|
-| base (form+meta) | 33 | 0.0169 |
-| + form_eb | 47 | 0.0170 |
-| + career | 55 | 0.0169 |
-| + understat | 64 | 0.0164 |
-| + setpiece | 68 | 0.0164 |
-| + opponent | 76 | 0.0164 |
-| + market | 79 | 0.0164 |
-| + schedule | 86 | 0.0164 |
-| + manager | 90 | 0.0164 |
-| + tournament | 97 | 0.0165 |
-| all - form_eb | 83 | 0.0164 |
-| all - career | 89 | 0.0165 |
-| all - understat | 88 | 0.0170 |
-| all - setpiece | 93 | 0.0165 |
-| all - opponent | 89 | 0.0164 |
-| all - market | 94 | 0.0164 |
-| all - schedule | 90 | 0.0164 |
-| all - manager | 93 | 0.0165 |
-| all - tournament | 90 | 0.0164 |
+| config | n | 2023-24 | 2024-25 | 2025-26 | 2025-26 H2 |
+|---|---|---|---|---|---|
+| base (form+meta) | 33 | 0.0164 | 0.0149 | 0.0169 | 0.0160 |
+| + form_eb | 47 | 0.0164 | 0.0149 | 0.0169 | 0.0160 |
+| + career | 55 | 0.0164 | 0.0149 | 0.0169 | 0.0160 |
+| + understat | 64 | 0.0158 | 0.0145 | 0.0164 | 0.0155 |
+| + setpiece | 68 | 0.0158 | 0.0145 | 0.0164 | 0.0154 |
+| + opponent | 76 | 0.0158 | 0.0144 | 0.0164 | 0.0155 |
+| + market | 79 | 0.0158 | 0.0145 | 0.0164 | 0.0154 |
+| + schedule | 86 | 0.0158 | 0.0145 | 0.0164 | 0.0155 |
+| + manager | 90 | 0.0158 | 0.0145 | 0.0164 | 0.0154 |
+| + tournament | 97 | 0.0158 | 0.0145 | 0.0164 | 0.0154 |
+| all - form_eb | 83 | 0.0159 | 0.0145 | 0.0164 | 0.0154 |
+| all - career | 89 | 0.0158 | 0.0145 | 0.0164 | 0.0154 |
+| all - understat | 88 | 0.0163 | 0.0149 | 0.0169 | 0.0160 |
+| all - setpiece | 93 | 0.0159 | 0.0146 | 0.0164 | 0.0154 |
+| all - opponent | 89 | 0.0158 | 0.0145 | 0.0164 | 0.0154 |
+| all - market | 94 | 0.0158 | 0.0145 | 0.0164 | 0.0154 |
+| all - schedule | 90 | 0.0158 | 0.0145 | 0.0164 | 0.0155 |
+| all - manager | 93 | 0.0158 | 0.0145 | 0.0164 | 0.0154 |
+| all - tournament | 90 | 0.0158 | 0.0145 | 0.0164 | 0.0154 |
 
