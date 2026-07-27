@@ -18,7 +18,7 @@ sends `/api/(.*)` to the `api` service, the second sends everything else to
 Because both share one domain, browser requests to the API are same-origin:
 **no CORS is involved in production**, and no API hostname is baked into the
 client bundle. `CORS_ORIGINS` only matters for local development, where the
-frontend is on port 3000 and the API on 8000.
+frontend is on port 3006 and the API on 8000.
 
 Login is Supabase email+password, invite-only. Every `/api/*` route except
 `/api/health` requires a valid Supabase access token.
@@ -94,7 +94,7 @@ All on the single `plfantasy` project:
 | `DATABASE_URL` | api | **Transaction** pooler, port 6543 (see below) |
 | `SUPABASE_URL` | api | JWT issuer + JWKS host |
 | `SUPABASE_JWT_SECRET` | api | Only for legacy HS256 projects; unset here |
-| `CORS_ORIGINS` | api | `http://localhost:3000` — local dev only |
+| `CORS_ORIGINS` | api | `http://localhost:3006` — local dev only |
 | `NEXT_PUBLIC_SUPABASE_URL` | web | |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | web | Publishable key; safe to expose |
 | `API_ORIGIN` | web (server) | `https://plfantasy.vercel.app` — see below |

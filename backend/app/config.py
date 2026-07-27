@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     database_url: str = (
         "postgresql+psycopg://postgres:postgres@localhost:5432/plfantasy"
     )
-    cors_origins: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:3006"
     # Regex alternative to the origin list, for Vercel preview deployments whose
     # URLs are generated per-commit (e.g. ^https://myapp-.*\.vercel\.app$).
     cors_origin_regex: str = ""

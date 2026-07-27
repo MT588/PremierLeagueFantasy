@@ -77,7 +77,7 @@ uv run uvicorn app.main:app --port 8000
 # 6. run the web app
 cd ../frontend
 npm install
-npm run dev                                        # http://localhost:3000
+npm run dev                                        # http://localhost:3006
 ```
 
 `--all` loads historical and live FPL data, curated manager/set-piece/European
